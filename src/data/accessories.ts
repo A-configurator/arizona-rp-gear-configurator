@@ -122,6 +122,16 @@ import lokiMaskImg from '@/assets/slot2-yellow/loki-mask.png';
 import wrenchMaskImg from '@/assets/slot2-yellow/wrench-mask.png';
 import glentRobloxMaskImg from '@/assets/slot2-yellow/glent-roblox-mask.png';
 
+// Импорты аксессуаров слота 3 (Рука)
+import spaceHandImg from '@/assets/slot3-hand/space-hand.png';
+import duffHammerImg from '@/assets/slot3-hand/duff-hammer.png';
+import prototypeImg from '@/assets/slot3-hand/prototype.png';
+import viGloveImg from '@/assets/slot3-hand/vi-glove.png';
+import knucklesGloveImg from '@/assets/slot3-hand/knuckles-glove.png';
+import magicAxeImg from '@/assets/slot3-hand/magic-axe.png';
+import frapsSignImg from '@/assets/slot3-hand/fraps-sign.png';
+import azzinothBladesImg from '@/assets/slot3-hand/azzinoth-blades.png';
+
 // Аксессуары Arizona RP
 export const accessories: Accessory[] = [
   // ===== СЛОТ 1 - ГОЛОВА =====
@@ -507,6 +517,87 @@ export const accessories: Accessory[] = [
     yellowStats: { ...emptyStats, maxHp: 15, maxArmor: 15 },
     imageUrl: glentRobloxMaskImg,
     isYellowOnly: true,
+  },
+  // ===== СЛОТ 3 - РУКА =====
+  {
+    id: 501,
+    name: 'Космическая рука',
+    slot: 3,
+    slotName: 'Рука',
+    description: 'Космическая кибернетическая рука',
+    rarity: 'legendary',
+    stats: { ...emptyStats, damage: 4, maxArmor: 10, reflect: 1 },
+    imageUrl: spaceHandImg,
+  },
+  {
+    id: 502,
+    name: 'Молот «Duff»',
+    slot: 3,
+    slotName: 'Рука',
+    description: 'Молот из банки пива Duff',
+    rarity: 'epic',
+    stats: { ...emptyStats, damage: 4 },
+    imageUrl: duffHammerImg,
+  },
+  {
+    id: 503,
+    name: 'Прототип',
+    slot: 3,
+    slotName: 'Рука',
+    description: 'Демоническое оружие-прототип',
+    rarity: 'legendary',
+    stats: { ...emptyStats, damage: 4 },
+    imageUrl: prototypeImg,
+  },
+  {
+    id: 504,
+    name: 'Перчатка Вай',
+    slot: 3,
+    slotName: 'Рука',
+    description: 'Перчатка из Arcane',
+    rarity: 'legendary',
+    stats: { ...emptyStats, damage: 4 },
+    imageUrl: viGloveImg,
+  },
+  {
+    id: 505,
+    name: 'Перчатка Наклза',
+    slot: 3,
+    slotName: 'Рука',
+    description: 'Перчатка ехидны Наклза',
+    rarity: 'epic',
+    stats: { ...emptyStats, damage: 4 },
+    imageUrl: knucklesGloveImg,
+  },
+  {
+    id: 506,
+    name: 'Магический топор',
+    slot: 3,
+    slotName: 'Рука',
+    description: 'Волшебный топор с магическим эффектом',
+    rarity: 'legendary',
+    stats: { ...emptyStats, damage: 4 },
+    imageUrl: magicAxeImg,
+  },
+  {
+    id: 507,
+    name: 'Табличка «Фрапс пишется»',
+    slot: 3,
+    slotName: 'Рука',
+    description: 'Хлопушка с надписью Фрапс пишется',
+    rarity: 'rare',
+    stats: { ...emptyStats, defense: -2, damage: 2, luck: 2 },
+    imageUrl: frapsSignImg,
+  },
+  {
+    id: 508,
+    name: 'Клинки Аззинота',
+    slot: 3,
+    slotName: 'Рука',
+    description: 'Легендарные клинки из World of Warcraft',
+    rarity: 'legendary',
+    stats: { ...emptyStats, defense: -2, damage: 2, luck: 2 },
+    imageUrl: azzinothBladesImg,
   },
 ];
 
