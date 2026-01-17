@@ -79,11 +79,121 @@ export const STAT_SUFFIXES: Record<keyof AccessoryStats, string> = {
 // Пустые статы - используй для новых аксессуаров
 export const emptyStats: AccessoryStats = { defense: 0, regen: 0, damage: 0, luck: 0, maxHp: 0, maxArmor: 0, stunChance: 0, drunkChance: 0, antiStun: 0, reflect: 0, block: 0, fireRate: 0, recoil: 0 };
 
-// Аксессуары Arizona RP - добавляй сюда вручную
-// Формат:
-// { id: число, name: 'Название', slot: 1-8, slotName: 'Название слота', description: 'Описание', rarity: 'common'|'rare'|'epic'|'legendary', stats: { ...emptyStats, defense: 5 } },
+// Импорты изображений аксессуаров
+import markerDeadInsideImg from '@/assets/accessories/marker-dead-inside.png';
+import enderCubeImg from '@/assets/accessories/ender-cube.png';
+import starNimbusImg from '@/assets/accessories/star-nimbus.png';
+import markerBadImg from '@/assets/accessories/marker-bad.png';
+import fightClubImg from '@/assets/accessories/fight-club.png';
+import ironManHelmetImg from '@/assets/accessories/iron-man-helmet.png';
+import happyPepeImg from '@/assets/accessories/happy-pepe.png';
+import pumpkinHeadImg from '@/assets/accessories/pumpkin-head.png';
+import jetpackImg from '@/assets/accessories/jetpack.png';
+import spaceJetpackImg from '@/assets/accessories/space-jetpack.png';
+
+// Аксессуары Arizona RP
 export const accessories: Accessory[] = [
-  // Добавляй аксессуары здесь
+  // ===== СЛОТ 1 - ГОЛОВА =====
+  {
+    id: 101,
+    name: 'Маркер dead inside',
+    slot: 1,
+    slotName: 'Голова',
+    description: 'Маркер с надписью Dead Inside',
+    rarity: 'rare',
+    stats: { ...emptyStats, damage: 1, luck: 10, stunChance: 1 },
+    imageUrl: markerDeadInsideImg,
+  },
+  {
+    id: 102,
+    name: 'Эндер куб',
+    slot: 1,
+    slotName: 'Голова',
+    description: 'Загадочный эндер куб',
+    rarity: 'epic',
+    stats: { ...emptyStats, damage: 1, luck: 10, stunChance: 1 },
+    imageUrl: enderCubeImg,
+  },
+  {
+    id: 103,
+    name: 'Звёздный нимб',
+    slot: 1,
+    slotName: 'Голова',
+    description: 'Сияющий звёздный нимб',
+    rarity: 'legendary',
+    stats: { ...emptyStats, damage: 1, luck: 10, stunChance: 1 },
+    imageUrl: starNimbusImg,
+  },
+  {
+    id: 104,
+    name: 'Маркер «BAD»',
+    slot: 1,
+    slotName: 'Голова',
+    description: 'Маркер с надписью BAD',
+    rarity: 'rare',
+    stats: { ...emptyStats, luck: 10 },
+    imageUrl: markerBadImg,
+  },
+  {
+    id: 105,
+    name: 'Бойцовский клуб',
+    slot: 1,
+    slotName: 'Голова',
+    description: 'Первое правило бойцовского клуба...',
+    rarity: 'epic',
+    stats: { ...emptyStats, luck: 10 },
+    imageUrl: fightClubImg,
+  },
+  {
+    id: 106,
+    name: 'Шлем железного человека',
+    slot: 1,
+    slotName: 'Голова',
+    description: 'Шлем Тони Старка',
+    rarity: 'legendary',
+    stats: { ...emptyStats, luck: 2 },
+    imageUrl: ironManHelmetImg,
+  },
+  {
+    id: 107,
+    name: 'Весёлый Пепе',
+    slot: 1,
+    slotName: 'Голова',
+    description: 'Знаменитая лягушка Пепе',
+    rarity: 'common',
+    stats: { ...emptyStats, luck: 1 },
+    imageUrl: happyPepeImg,
+  },
+  {
+    id: 108,
+    name: 'Голова Тыква',
+    slot: 1,
+    slotName: 'Голова',
+    description: 'Хэллоуинская тыква',
+    rarity: 'rare',
+    stats: { ...emptyStats, defense: 2, damage: 2, luck: 2 },
+    imageUrl: pumpkinHeadImg,
+  },
+  {
+    id: 109,
+    name: 'Джетпак',
+    slot: 1,
+    slotName: 'Голова',
+    description: 'Реактивный ранец',
+    rarity: 'rare',
+    stats: { ...emptyStats, defense: 2, damage: 2, luck: 2 },
+    imageUrl: jetpackImg,
+  },
+  {
+    id: 110,
+    name: 'Космический джетпак',
+    slot: 1,
+    slotName: 'Голова',
+    description: 'Улучшенный космический джетпак',
+    rarity: 'epic',
+    stats: { ...emptyStats, defense: 2, damage: 2, luck: 2 },
+    imageUrl: spaceJetpackImg,
+  },
 ];
 
 export const getEmptyStats = (): AccessoryStats => ({
