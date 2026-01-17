@@ -27,12 +27,20 @@ export interface Accessory {
   slotName: string;
   description: string;
   rarity: 'common' | 'rare' | 'epic' | 'legendary';
-  stats: AccessoryStats;           // Базовые характеристики (могут переноситься)
-  yellowStats?: AccessoryStats;     // Жёлтые характеристики (переносятся отдельно)
-  accessoryType?: AccessoryType;    // Тип аксессуара (для слота 6)
+
+  // Встроенные (свои) характеристики аксессуара
+  stats: AccessoryStats;
+  yellowStats?: AccessoryStats;
+
+  // Перенесённые характеристики (добавляются к встроенным)
+  baseTransferStats?: AccessoryStats;
+  yellowTransferStats?: AccessoryStats;
+
+  accessoryType?: AccessoryType; // Тип аксессуара (для слота 6)
   imageUrl?: string;
-  isYellowOnly?: boolean;          // Аксессуар только с жёлтыми характеристиками
+  isYellowOnly?: boolean; // Аксессуар только с жёлтыми характеристиками
 }
+
 
 export const SLOT_NAMES: Record<number, string> = {
   1: 'Голова',
@@ -1079,14 +1087,15 @@ export const getEmptyStats = (): AccessoryStats => ({
 
 export const calculateTotalStats = (equippedAccessories: (Accessory | null)[]): AccessoryStats => {
   const total = getEmptyStats();
-  
+
   equippedAccessories.forEach((acc) => {
-    if (acc) {
-      (Object.keys(total) as (keyof AccessoryStats)[]).forEach((key) => {
-        total[key] += acc.stats[key];
-      });
-    }
+    if (!acc) return;
+
+    (Object.keys(total) as (keyof AccessoryStats)[]).forEach((key) => {
+      total[key] += (acc.stats?.[key] || 0) + (acc.baseTransferStats?.[key] || 0);
+    });
   });
-  
+
   return total;
 };
+

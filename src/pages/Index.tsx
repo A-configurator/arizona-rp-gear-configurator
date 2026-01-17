@@ -193,15 +193,15 @@ const calculateEnhancementBonuses = (
 // Calculate total yellow stats from all equipped accessories
 const calculateYellowStats = (equippedAccessories: (Accessory | null)[]): AccessoryStats => {
   const total = getEmptyStats();
-  
+
   equippedAccessories.forEach((acc) => {
-    if (acc?.yellowStats) {
-      (Object.keys(total) as (keyof AccessoryStats)[]).forEach((key) => {
-        total[key] += acc.yellowStats![key] || 0;
-      });
-    }
+    if (!acc) return;
+
+    (Object.keys(total) as (keyof AccessoryStats)[]).forEach((key) => {
+      total[key] += (acc.yellowStats?.[key] || 0) + (acc.yellowTransferStats?.[key] || 0);
+    });
   });
-  
+
   return total;
 };
 
@@ -830,12 +830,19 @@ const Index = () => {
   // Выбрали базовые характеристики для переноса
   const handleSelectBaseStats = useCallback((sourceAccessory: Accessory) => {
     if (pendingAccessory) {
-      // Добавляем базовые статы от источника
+      // Добавляем перенесённые базовые статы (не затирая встроенные)
       const updatedAccessory: Accessory = {
         ...pendingAccessory,
-        stats: { ...sourceAccessory.stats },
+        baseTransferStats: { ...sourceAccessory.stats },
+        // Для слота 6 перенос базовых статов также переносит тип (АТК/ЗАЩ) для заточки
+        accessoryType:
+          pendingAccessory.slot === 6
+            ? (sourceAccessory.accessoryType || pendingAccessory.accessoryType)
+            : pendingAccessory.accessoryType,
       };
+
       setPendingAccessory(updatedAccessory);
+
       // Сохраняем источник базовых статов
       setSelectedBaseStatsSource((prev) => {
         const newSources = [...prev];
@@ -850,18 +857,29 @@ const Index = () => {
 
   // Пропустить перенос базовых характеристик
   const handleSkipBaseStats = useCallback(() => {
-    if (pendingAccessory) {
+    setPendingAccessory((currentPending) => {
+      if (!currentPending) return currentPending;
+
+      // Очищаем перенос базовых статов
+      const cleared: Accessory = {
+        ...currentPending,
+        baseTransferStats: undefined,
+      };
+
       // Очищаем источник базовых статов
       setSelectedBaseStatsSource((prev) => {
         const newSources = [...prev];
-        newSources[pendingAccessory.slot - 1] = null;
+        newSources[currentPending.slot - 1] = null;
         return newSources;
       });
-    }
+
+      return cleared;
+    });
+
     setShowBaseStatsModal(false);
     // Переходим к выбору жёлтых
     setShowYellowModal(true);
-  }, [pendingAccessory]);
+  }, []);
 
   // Выбрали жёлтые характеристики для переноса
   const handleSelectYellowStats = useCallback((sourceAccessory: Accessory) => {
@@ -870,7 +888,7 @@ const Index = () => {
         const yellowSource = sourceAccessory.yellowStats;
         const accessoryWithYellow: Accessory = {
           ...currentPending,
-          yellowStats: yellowSource ? { ...yellowSource } : undefined,
+          yellowTransferStats: yellowSource ? { ...yellowSource } : undefined,
         };
         setEquippedAccessories((prev) => {
           const newEquipped = [...prev];
@@ -893,9 +911,14 @@ const Index = () => {
   const handleSkipYellow = useCallback(() => {
     setPendingAccessory((currentPending) => {
       if (currentPending) {
+        const accessoryWithoutYellowTransfer: Accessory = {
+          ...currentPending,
+          yellowTransferStats: undefined,
+        };
+
         setEquippedAccessories((prev) => {
           const newEquipped = [...prev];
-          newEquipped[currentPending.slot - 1] = currentPending;
+          newEquipped[currentPending.slot - 1] = accessoryWithoutYellowTransfer;
           return newEquipped;
         });
         // Очищаем источник жёлтых статов
@@ -916,6 +939,19 @@ const Index = () => {
       newEquipped[slotIndex] = null;
       return newEquipped;
     });
+
+    // Также очищаем источники переносов, чтобы не оставались «привязки»
+    setSelectedYellowStatsSource((prev) => {
+      const next = [...prev];
+      next[slotIndex] = null;
+      return next;
+    });
+    setSelectedBaseStatsSource((prev) => {
+      const next = [...prev];
+      next[slotIndex] = null;
+      return next;
+    });
+
     setSelectedSlot(null);
   }, []);
 
