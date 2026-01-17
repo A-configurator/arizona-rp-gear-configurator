@@ -316,6 +316,7 @@ const Index = () => {
   const [selectedSlot, setSelectedSlot] = useState<number | null>(null);
   const [selectedSkin, setSelectedSkin] = useState<Skin | null>(skins[0] || null);
   const [showSkinModal, setShowSkinModal] = useState(false);
+  const [skinEnhancement, setSkinEnhancement] = useState(14);
 
   // Комбинированные статы: аксессуары + скин
   const totalStats = useMemo(() => {
@@ -380,15 +381,35 @@ const Index = () => {
       {/* Main content: Character + Stats */}
       <div className="flex gap-4 mb-6">
         {/* Character image - clickable for skin selection */}
-        <div
-          onClick={() => setShowSkinModal(true)}
-          className="w-32 h-48 bg-secondary/30 rounded-lg flex items-center justify-center flex-shrink-0 cursor-pointer hover:bg-secondary/50 transition-colors border-2 border-transparent hover:border-primary/30 overflow-hidden"
-        >
-          {selectedSkin ? (
-            <img src={selectedSkin.image} alt={selectedSkin.name} className="w-full h-full object-cover object-top" />
-          ) : (
-            <div className="text-4xl">🧑</div>
-          )}
+        <div className="flex flex-col items-center flex-shrink-0">
+          <div
+            onClick={() => setShowSkinModal(true)}
+            className="w-32 h-48 bg-secondary/30 rounded-lg flex items-center justify-center cursor-pointer hover:bg-secondary/50 transition-colors border-2 border-transparent hover:border-primary/30 overflow-hidden"
+          >
+            {selectedSkin ? (
+              <img src={selectedSkin.image} alt={selectedSkin.name} className="w-full h-full object-cover object-top" />
+            ) : (
+              <div className="text-4xl">🧑</div>
+            )}
+          </div>
+          
+          {/* Skin enhancement controls */}
+          <div className="flex items-center justify-center gap-1 mt-2">
+            <span className="text-xs font-bold text-muted-foreground">N</span>
+            <span className="text-xs font-medium text-primary">+{skinEnhancement}</span>
+            <button
+              onClick={() => setSkinEnhancement(Math.max(0, skinEnhancement - 1))}
+              className="w-5 h-5 bg-secondary rounded flex items-center justify-center hover:bg-secondary/80"
+            >
+              <Minus className="w-3 h-3" />
+            </button>
+            <button
+              onClick={() => setSkinEnhancement(Math.min(14, skinEnhancement + 1))}
+              className="w-5 h-5 bg-secondary rounded flex items-center justify-center hover:bg-secondary/80"
+            >
+              <Plus className="w-3 h-3" />
+            </button>
+          </div>
         </div>
 
         {/* Stats */}
