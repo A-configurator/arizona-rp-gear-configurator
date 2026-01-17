@@ -1092,10 +1092,16 @@ export const calculateTotalStats = (equippedAccessories: (Accessory | null)[]): 
     if (!acc) return;
 
     (Object.keys(total) as (keyof AccessoryStats)[]).forEach((key) => {
-      total[key] += (acc.stats?.[key] || 0) + (acc.baseTransferStats?.[key] || 0);
+      const baseVal = acc.stats?.[key] || 0;
+      const transferVal = acc.baseTransferStats?.[key] || 0;
+
+      const normalize = (v: number) => (key === 'defense' && v < 0 ? -v : v);
+
+      total[key] += normalize(baseVal) + normalize(transferVal);
     });
   });
 
   return total;
 };
+
 
