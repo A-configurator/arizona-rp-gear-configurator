@@ -102,6 +102,12 @@ const SkinModal = ({ selectedSkinId, onSelect, onClose }: SkinModalProps) => {
               >
                 <img src={skin.image} alt={skin.name} className="w-16 h-20 object-cover object-top rounded" />
                 <div className="text-[10px] font-medium truncate w-full text-center">{skin.name}</div>
+                <div className="text-[9px] text-primary/80 text-center leading-tight">
+                  {skin.stats.defense && <span>🛡️{skin.stats.defense} </span>}
+                  {skin.stats.damage && <span>⚔️{skin.stats.damage} </span>}
+                  {skin.stats.reflect && <span>↩️{skin.stats.reflect} </span>}
+                  {skin.stats.maxArmor && <span>🔰{skin.stats.maxArmor}</span>}
+                </div>
               </div>
             ))}
           </div>
