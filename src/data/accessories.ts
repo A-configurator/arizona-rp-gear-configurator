@@ -156,6 +156,20 @@ import flyingSnowflakesImg from '@/assets/slot4-neck/flying-snowflakes.png';
 import illuminatiChainImg from '@/assets/slot4-yellow/illuminati-chain.png';
 import giantChainImg from '@/assets/slot4-yellow/giant-chain.png';
 
+// Импорты аксессуаров слота 5 (Плечо)
+import magicBalloonImg from '@/assets/slot5-shoulder/magic-balloon.png';
+import energyBalloonImg from '@/assets/slot5-shoulder/energy-balloon.png';
+import kuraBalloonImg from '@/assets/slot5-shoulder/kura-balloon.png';
+import toyDeloreanImg from '@/assets/slot5-shoulder/toy-delorean.png';
+import planetExpressImg from '@/assets/slot5-shoulder/planet-express.png';
+import pirateCompassImg from '@/assets/slot5-shoulder/pirate-compass.png';
+import flyingDutchmanImg from '@/assets/slot5-shoulder/flying-dutchman.png';
+import noStatsItemImg from '@/assets/slot5-shoulder/no-stats-item.png';
+import mineSkeletonImg from '@/assets/slot5-shoulder/mine-skeleton.png';
+
+// Импорты жёлтых аксессуаров слота 5 (только с жёлтыми характеристиками)
+import arcanaIoImg from '@/assets/slot5-yellow/arcana-io.png';
+
 // Аксессуары Arizona RP
 export const accessories: Accessory[] = [
   // ===== СЛОТ 1 - ГОЛОВА =====
@@ -828,6 +842,110 @@ export const accessories: Accessory[] = [
     stats: { ...emptyStats },
     yellowStats: { ...emptyStats, maxHp: 15, maxArmor: 15 },
     imageUrl: giantChainImg,
+    isYellowOnly: true,
+  },
+
+  // ===== СЛОТ 5 - ПЛЕЧО =====
+  {
+    id: 501,
+    name: 'Магический воздушный шар #2',
+    slot: 5,
+    slotName: 'Плечо',
+    description: 'Магический огненный воздушный шар',
+    rarity: 'rare',
+    stats: { ...emptyStats, defense: -2, damage: 1, luck: 10, maxArmor: 25 },
+    imageUrl: magicBalloonImg,
+  },
+  {
+    id: 502,
+    name: 'Энергетический воздушный шар',
+    slot: 5,
+    slotName: 'Плечо',
+    description: 'Высокотехнологичный энергетический шар',
+    rarity: 'epic',
+    stats: { ...emptyStats, defense: -4, damage: 4, luck: 24, maxHp: 5, maxArmor: 27, antiStun: 10 },
+    imageUrl: energyBalloonImg,
+  },
+  {
+    id: 503,
+    name: 'Энергетический КУРА шар',
+    slot: 5,
+    slotName: 'Плечо',
+    description: 'Энергетический шар в виде КУРЫ',
+    rarity: 'epic',
+    stats: { ...emptyStats, defense: -4, damage: 4, luck: 24, maxHp: 5, maxArmor: 27, antiStun: 10 },
+    imageUrl: kuraBalloonImg,
+  },
+  {
+    id: 504,
+    name: 'Игрушечный Delorean',
+    slot: 5,
+    slotName: 'Плечо',
+    description: 'Миниатюрная копия легендарного DeLorean',
+    rarity: 'rare',
+    stats: { ...emptyStats, luck: 10, maxArmor: 25, stunChance: 4 },
+    imageUrl: toyDeloreanImg,
+  },
+  {
+    id: 505,
+    name: 'Planet Express',
+    slot: 5,
+    slotName: 'Плечо',
+    description: 'Корабль Planet Express',
+    rarity: 'rare',
+    stats: { ...emptyStats, luck: 10, maxArmor: 25, stunChance: 4 },
+    imageUrl: planetExpressImg,
+  },
+  {
+    id: 506,
+    name: 'Пиратский компас',
+    slot: 5,
+    slotName: 'Плечо',
+    description: 'Мистический пиратский компас',
+    rarity: 'epic',
+    stats: { ...emptyStats, defense: -4, damage: 4, luck: 24, maxHp: 5, maxArmor: 27, antiStun: 20 },
+    imageUrl: pirateCompassImg,
+  },
+  {
+    id: 507,
+    name: 'Летучий голландец',
+    slot: 5,
+    slotName: 'Плечо',
+    description: 'Призрачный корабль Летучий голландец',
+    rarity: 'legendary',
+    stats: { ...emptyStats, defense: -4, damage: 4, luck: 24, maxHp: 5, maxArmor: 27, antiStun: 20 },
+    imageUrl: flyingDutchmanImg,
+  },
+  {
+    id: 508,
+    name: 'Безымянный аксессуар',
+    slot: 5,
+    slotName: 'Плечо',
+    description: 'Загадочный аксессуар без характеристик',
+    rarity: 'common',
+    stats: { ...emptyStats },
+    imageUrl: noStatsItemImg,
+  },
+  {
+    id: 509,
+    name: 'МайнСкелет',
+    slot: 5,
+    slotName: 'Плечо',
+    description: 'Легендарный аксессуар МайнСкелет',
+    rarity: 'legendary',
+    stats: { ...emptyStats },
+    imageUrl: mineSkeletonImg,
+  },
+  {
+    id: 901,
+    name: 'Аркана ИО',
+    slot: 5,
+    slotName: 'Плечо',
+    description: 'Мистическая аркана с сердцем',
+    rarity: 'epic',
+    stats: { ...emptyStats },
+    yellowStats: { ...emptyStats, defense: 2, damage: 1, luck: 1, maxHp: 10 },
+    imageUrl: arcanaIoImg,
     isYellowOnly: true,
   },
 ];
