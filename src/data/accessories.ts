@@ -1101,7 +1101,10 @@ export const calculateTotalStats = (equippedAccessories: (Accessory | null)[]): 
 
       // «Защита: -X» означает +X к защите
       const normalized = key === 'defense' && val < 0 ? -val : val;
-      total[key] += normalized;
+      
+      // Встроенные характеристики дают в 2 раза меньше (перенесённые — полные)
+      const finalVal = hasTransfer ? normalized : Math.floor(normalized / 2);
+      total[key] += finalVal;
     });
   });
 
