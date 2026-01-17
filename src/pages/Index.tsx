@@ -197,13 +197,17 @@ const calculateYellowStats = (equippedAccessories: (Accessory | null)[]): Access
   equippedAccessories.forEach((acc) => {
     if (!acc) return;
 
+    // Если есть перенос жёлтых — берём ТОЛЬКО перенесённые, иначе — только встроенные
+    const hasTransfer = !!acc.yellowTransferStats;
+
     (Object.keys(total) as (keyof AccessoryStats)[]).forEach((key) => {
-      const baseVal = acc.yellowStats?.[key] || 0;
-      const transferVal = acc.yellowTransferStats?.[key] || 0;
+      const val = hasTransfer
+        ? acc.yellowTransferStats![key] || 0
+        : acc.yellowStats?.[key] || 0;
 
-      const normalize = (v: number) => (key === 'defense' && v < 0 ? -v : v);
-
-      total[key] += normalize(baseVal) + normalize(transferVal);
+      // «Защита: -X» означает +X к защите
+      const normalized = key === 'defense' && val < 0 ? -val : val;
+      total[key] += normalized;
     });
   });
 

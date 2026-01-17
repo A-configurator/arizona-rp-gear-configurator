@@ -1091,13 +1091,17 @@ export const calculateTotalStats = (equippedAccessories: (Accessory | null)[]): 
   equippedAccessories.forEach((acc) => {
     if (!acc) return;
 
+    // Если есть перенос базовых — берём ТОЛЬКО перенесённые, иначе — только встроенные
+    const hasTransfer = !!acc.baseTransferStats;
+
     (Object.keys(total) as (keyof AccessoryStats)[]).forEach((key) => {
-      const baseVal = acc.stats?.[key] || 0;
-      const transferVal = acc.baseTransferStats?.[key] || 0;
+      const val = hasTransfer
+        ? acc.baseTransferStats![key] || 0
+        : acc.stats?.[key] || 0;
 
-      const normalize = (v: number) => (key === 'defense' && v < 0 ? -v : v);
-
-      total[key] += normalize(baseVal) + normalize(transferVal);
+      // «Защита: -X» означает +X к защите
+      const normalized = key === 'defense' && val < 0 ? -val : val;
+      total[key] += normalized;
     });
   });
 
