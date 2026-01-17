@@ -1101,12 +1101,7 @@ export const calculateTotalStats = (equippedAccessories: (Accessory | null)[]): 
 
       // «Защита: -X» означает +X к защите
       const normalized = key === 'defense' && val < 0 ? -val : val;
-      
-      // Встроенные характеристики дают в 2 раза меньше только для 6-го слота
-      // Слоты 1-5 дают полные статы
-      const isSlot6 = acc.slot === 6;
-      const finalVal = hasTransfer || !isSlot6 ? normalized : Math.floor(normalized / 2);
-      total[key] += finalVal;
+      total[key] += normalized;
     });
   });
 
