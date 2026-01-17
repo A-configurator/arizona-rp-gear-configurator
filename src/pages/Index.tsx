@@ -798,31 +798,6 @@ const EquipmentSlot = ({ slotNumber, equipped, enhancement, onSlotClick, onEnhan
         </button>
       </div>
 
-      {/* Slot 6 type toggle */}
-      {slotNumber === 6 && equipped && onSlot6TypeChange && (
-        <div className="flex items-center justify-center gap-1 mt-1">
-          <button
-            onClick={(e) => { e.stopPropagation(); onSlot6TypeChange('attack'); }}
-            className={`text-[9px] px-1.5 py-0.5 rounded transition-colors ${
-              slot6Type === 'attack' 
-                ? 'bg-destructive text-destructive-foreground' 
-                : 'bg-secondary text-muted-foreground hover:bg-secondary/80'
-            }`}
-          >
-            АТК
-          </button>
-          <button
-            onClick={(e) => { e.stopPropagation(); onSlot6TypeChange('defense'); }}
-            className={`text-[9px] px-1.5 py-0.5 rounded transition-colors ${
-              slot6Type === 'defense' 
-                ? 'bg-primary text-primary-foreground' 
-                : 'bg-secondary text-muted-foreground hover:bg-secondary/80'
-            }`}
-          >
-            ЗАЩ
-          </button>
-        </div>
-      )}
     </div>
   );
 };
