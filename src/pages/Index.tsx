@@ -125,10 +125,11 @@ const calculateSlotBonuses = (
   }
 
   // Slot 6 - Universal (attack or defense based on accessory type)
+  // По правилам: до +3 включительно бонусов НЕТ, бонусы начинаются с +4
   if (slot === 6) {
     if (accessoryType === 'attack') {
-      if (level >= 3 && level <= 12) {
-        bonuses.damage = level - 2; // +1 per level from 3
+      if (level >= 4 && level <= 12) {
+        bonuses.damage = level - 3; // +1 per level from 4
       } else if (level === 13) {
         bonuses.damage = 11;
         bonuses.maxHp = 4;
@@ -141,8 +142,8 @@ const calculateSlotBonuses = (
         bonuses.reflect = 1;
       }
     } else {
-      if (level >= 3 && level <= 12) {
-        bonuses.defense = (level - 2) * 2; // +2 per level from 3
+      if (level >= 4 && level <= 12) {
+        bonuses.defense = (level - 3) * 2; // +2 per level from 4
       } else if (level === 13) {
         bonuses.defense = 22;
         bonuses.maxHp = 4;
