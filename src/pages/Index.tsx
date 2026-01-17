@@ -22,17 +22,18 @@ export interface Skin {
   stats: Partial<AccessoryStats>;
 }
 
+// Скины со статами при +12 заточке
 const skins: Skin[] = [
-  { id: 1, name: 'Космический Фермер', image: spaceFarmerImg, stats: { defense: 2, damage: 2, reflect: 3, maxArmor: 50 } },
-  { id: 2, name: 'Суидни Суини', image: suidniSweeneyImg, stats: { defense: 2, damage: 2, reflect: 3 } },
-  { id: 3, name: 'Человек-муравей', image: antManImg, stats: { defense: 2, damage: 2, reflect: 3 } },
-  { id: 4, name: 'Мэгу', image: meguImg, stats: { defense: 2, damage: 2, reflect: 3 } },
-  { id: 5, name: 'Кровавый Ангел', image: bloodAngelImg, stats: { defense: 2, damage: 2, reflect: 3 } },
-  { id: 6, name: 'Космодесантник', image: spaceMarineImg, stats: { defense: 2, damage: 2, reflect: 3 } },
+  { id: 1, name: 'Космический Фермер', image: spaceFarmerImg, stats: { defense: 10, regen: 4, damage: 6, luck: 4, maxHp: 12, maxArmor: 62 } },
+  { id: 2, name: 'Суидни Суини', image: suidniSweeneyImg, stats: { defense: 10, regen: 4, damage: 6, luck: 4, maxHp: 12, maxArmor: 62 } },
+  { id: 3, name: 'Человек-муравей', image: antManImg, stats: { defense: 10, regen: 4, damage: 6, luck: 4, maxHp: 12, maxArmor: 62 } },
+  { id: 4, name: 'Мэгу', image: meguImg, stats: { defense: 10, regen: 4, damage: 6, luck: 4, maxHp: 12, maxArmor: 62 } },
+  { id: 5, name: 'Кровавый Ангел', image: bloodAngelImg, stats: { defense: 10, regen: 4, damage: 6, luck: 4, maxHp: 12, maxArmor: 62 } },
+  { id: 6, name: 'Космодесантник', image: spaceMarineImg, stats: { defense: 10, regen: 4, damage: 6, luck: 4, maxHp: 12, maxArmor: 62 } },
   { id: 7, name: 'Альтушка', image: altGirlImg, stats: { maxArmor: 100 } },
-  { id: 8, name: 'Спецназовец', image: spetsnazImg, stats: { defense: 2, damage: 2, reflect: 3 } },
-  { id: 9, name: 'Дэдпул', image: deadpoolImg, stats: { damage: 2, reflect: 3 } },
-  { id: 10, name: 'Данджи', image: danjiImg, stats: { defense: 2, damage: 2, reflect: 3 } },
+  { id: 8, name: 'Спецназовец', image: spetsnazImg, stats: { defense: 10, regen: 4, damage: 6, luck: 4, maxHp: 12, maxArmor: 62 } },
+  { id: 9, name: 'Дэдпул', image: deadpoolImg, stats: { damage: 6, luck: 4, maxHp: 12 } },
+  { id: 10, name: 'Данджи', image: danjiImg, stats: { defense: 10, regen: 4, damage: 6, luck: 4, maxHp: 12, maxArmor: 62 } },
 ];
 
 // Названия статов для отображения в модалке скинов
@@ -317,26 +318,16 @@ const Index = () => {
   const [selectedSkin, setSelectedSkin] = useState<Skin | null>(skins[0] || null);
   const [showSkinModal, setShowSkinModal] = useState(false);
 
-  // Базовые статы скина при +12 заточке
-  const SKIN_BASE_STATS_AT_12: Partial<AccessoryStats> = {
-    defense: 10,
-    regen: 4,
-    damage: 6,
-    luck: 4,
-    maxHp: 12,
-    maxArmor: 62,
-  };
-
-  // Комбинированные статы: аксессуары + скин (только база от заточки +12)
+  // Комбинированные статы: аксессуары + индивидуальные статы скина
   const totalStats = useMemo(() => {
     const accessoryStats = calculateTotalStats(equippedAccessories);
     
     if (selectedSkin) {
-      // Добавляем базовые статы от заточки скина (+12 фиксировано)
-      (Object.keys(SKIN_BASE_STATS_AT_12) as (keyof AccessoryStats)[]).forEach((key) => {
-        const baseValue = SKIN_BASE_STATS_AT_12[key];
-        if (baseValue !== undefined) {
-          accessoryStats[key] += baseValue;
+      // Добавляем только те статы, которые есть у скина
+      (Object.keys(selectedSkin.stats) as (keyof AccessoryStats)[]).forEach((key) => {
+        const skinValue = selectedSkin.stats[key];
+        if (skinValue !== undefined) {
+          accessoryStats[key] += skinValue;
         }
       });
     }
