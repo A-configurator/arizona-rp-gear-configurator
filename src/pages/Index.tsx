@@ -1,6 +1,101 @@
 import { useState, useCallback, useMemo } from 'react';
-import { Accessory, accessories, calculateTotalStats, SLOT_NAMES, STAT_LABELS, STAT_SUFFIXES, AccessoryStats } from '@/data/accessories';
+import { Accessory, accessories, calculateTotalStats, SLOT_NAMES, AccessoryStats } from '@/data/accessories';
 import { X, Minus, Plus, Search } from 'lucide-react';
+
+// Skins data
+interface Skin {
+  id: number;
+  name: string;
+  emoji: string;
+}
+
+const skins: Skin[] = [
+  { id: 1, name: 'Стандарт', emoji: '🧑' },
+  { id: 2, name: 'Бандит', emoji: '🥷' },
+  { id: 3, name: 'Полицейский', emoji: '👮' },
+  { id: 4, name: 'Военный', emoji: '💂' },
+  { id: 5, name: 'Медик', emoji: '👨‍⚕️' },
+  { id: 6, name: 'Бизнесмен', emoji: '🧔' },
+  { id: 7, name: 'Байкер', emoji: '🏍️' },
+  { id: 8, name: 'Гангстер', emoji: '😎' },
+  { id: 9, name: 'Рэпер', emoji: '🎤' },
+  { id: 10, name: 'Спортсмен', emoji: '🏃' },
+];
+
+// Skin selection modal
+interface SkinModalProps {
+  selectedSkinId: number;
+  onSelect: (skin: Skin) => void;
+  onClose: () => void;
+}
+
+const SkinModal = ({ selectedSkinId, onSelect, onClose }: SkinModalProps) => {
+  const [searchTerm, setSearchTerm] = useState('');
+
+  const filteredSkins = useMemo(() => {
+    if (!searchTerm.trim()) return skins;
+    return skins.filter((skin) =>
+      skin.name.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  }, [searchTerm]);
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/80 backdrop-blur-sm" onClick={onClose}>
+      <div
+        className="w-full max-w-md max-h-[70vh] bg-card border border-border rounded-xl shadow-2xl flex flex-col overflow-hidden"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Header */}
+        <div className="flex items-center justify-between p-4 border-b border-border">
+          <h2 className="text-lg font-bold arz-text-gradient">Выбор скина</h2>
+          <button onClick={onClose} className="w-8 h-8 flex items-center justify-center rounded-full bg-secondary hover:bg-secondary/80 transition-colors">
+            <X className="w-4 h-4" />
+          </button>
+        </div>
+
+        {/* Search */}
+        <div className="p-3 border-b border-border">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+            <input
+              type="text"
+              placeholder="Поиск скина..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full pl-10 pr-4 py-2 bg-secondary border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
+            />
+          </div>
+        </div>
+        
+        {/* Skins list */}
+        <div className="flex-1 overflow-y-auto p-3 arz-scrollbar">
+          <div className="grid grid-cols-3 gap-2">
+            {filteredSkins.map((skin) => (
+              <div
+                key={skin.id}
+                onClick={() => onSelect(skin)}
+                className={`
+                  p-3 bg-secondary rounded-lg cursor-pointer flex flex-col items-center gap-2
+                  border-2 transition-all duration-200
+                  ${selectedSkinId === skin.id ? 'border-primary arz-glow' : 'border-border hover:border-primary/50'}
+                `}
+              >
+                <span className="text-3xl">{skin.emoji}</span>
+                <div className="text-xs font-medium truncate w-full text-center">{skin.name}</div>
+              </div>
+            ))}
+          </div>
+          
+          {filteredSkins.length === 0 && (
+            <div className="text-center text-muted-foreground py-8 text-sm">
+              Ничего не найдено
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
 
 // Slot selection modal - compact with search
 interface SlotModalProps {
@@ -182,6 +277,8 @@ const Index = () => {
   const [equippedAccessories, setEquippedAccessories] = useState<(Accessory | null)[]>(Array(8).fill(null));
   const [enhancements, setEnhancements] = useState<number[]>(Array(8).fill(14));
   const [selectedSlot, setSelectedSlot] = useState<number | null>(null);
+  const [selectedSkin, setSelectedSkin] = useState<Skin>(skins[0]);
+  const [showSkinModal, setShowSkinModal] = useState(false);
 
   const totalStats = calculateTotalStats(equippedAccessories);
 
@@ -231,9 +328,12 @@ const Index = () => {
 
       {/* Main content: Character + Stats */}
       <div className="flex gap-4 mb-6">
-        {/* Character image */}
-        <div className="w-32 h-48 bg-secondary/30 rounded-lg flex items-center justify-center flex-shrink-0">
-          <div className="text-4xl">🧑</div>
+        {/* Character image - clickable for skin selection */}
+        <div
+          onClick={() => setShowSkinModal(true)}
+          className="w-32 h-48 bg-secondary/30 rounded-lg flex items-center justify-center flex-shrink-0 cursor-pointer hover:bg-secondary/50 transition-colors border-2 border-transparent hover:border-primary/30"
+        >
+          <div className="text-4xl">{selectedSkin.emoji}</div>
         </div>
 
         {/* Stats */}
@@ -265,6 +365,18 @@ const Index = () => {
           onSelect={handleEquip}
           onUnequip={() => handleUnequip(selectedSlot - 1)}
           onClose={() => setSelectedSlot(null)}
+        />
+      )}
+
+      {/* Skin selection modal */}
+      {showSkinModal && (
+        <SkinModal
+          selectedSkinId={selectedSkin.id}
+          onSelect={(skin) => {
+            setSelectedSkin(skin);
+            setShowSkinModal(false);
+          }}
+          onClose={() => setShowSkinModal(false)}
         />
       )}
     </div>
