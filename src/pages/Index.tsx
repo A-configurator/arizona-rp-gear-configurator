@@ -8,10 +8,11 @@ interface SlotModalProps {
   accessories: Accessory[];
   equippedId: number | null;
   onSelect: (accessory: Accessory) => void;
+  onUnequip: () => void;
   onClose: () => void;
 }
 
-const SlotModal = ({ slotNumber, accessories: slotAccessories, equippedId, onSelect, onClose }: SlotModalProps) => {
+const SlotModal = ({ slotNumber, accessories: slotAccessories, equippedId, onSelect, onUnequip, onClose }: SlotModalProps) => {
   const [searchTerm, setSearchTerm] = useState('');
 
   const filteredAccessories = useMemo(() => {
@@ -34,6 +35,18 @@ const SlotModal = ({ slotNumber, accessories: slotAccessories, equippedId, onSel
             <X className="w-4 h-4" />
           </button>
         </div>
+
+        {/* Unequip button if something is equipped */}
+        {equippedId !== null && (
+          <div className="p-3 border-b border-border">
+            <button
+              onClick={onUnequip}
+              className="w-full py-2 px-4 bg-destructive/20 text-destructive border border-destructive/30 rounded-lg text-sm font-medium hover:bg-destructive/30 transition-colors"
+            >
+              Снять аксессуар
+            </button>
+          </div>
+        )}
 
         {/* Search */}
         <div className="p-3 border-b border-border">
@@ -181,6 +194,15 @@ const Index = () => {
     setSelectedSlot(null);
   }, []);
 
+  const handleUnequip = useCallback((slotIndex: number) => {
+    setEquippedAccessories((prev) => {
+      const newEquipped = [...prev];
+      newEquipped[slotIndex] = null;
+      return newEquipped;
+    });
+    setSelectedSlot(null);
+  }, []);
+
   const handleEnhance = useCallback((slotIndex: number, delta: number) => {
     setEnhancements((prev) => {
       const newEnhancements = [...prev];
@@ -241,6 +263,7 @@ const Index = () => {
           accessories={getAccessoriesForSlot(selectedSlot)}
           equippedId={equippedAccessories[selectedSlot - 1]?.id ?? null}
           onSelect={handleEquip}
+          onUnequip={() => handleUnequip(selectedSlot - 1)}
           onClose={() => setSelectedSlot(null)}
         />
       )}
