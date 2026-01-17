@@ -391,16 +391,19 @@ const Index = () => {
 
       {/* Main content: Character + Stats */}
       <div className="flex gap-4 mb-6">
-        {/* Character image - clickable for skin selection */}
-        <div
-          onClick={() => setShowSkinModal(true)}
-          className="w-32 h-48 bg-secondary/30 rounded-lg flex items-center justify-center flex-shrink-0 cursor-pointer hover:bg-secondary/50 transition-colors border-2 border-transparent hover:border-primary/30 overflow-hidden"
-        >
-          {selectedSkin ? (
-            <img src={selectedSkin.image} alt={selectedSkin.name} className="w-full h-full object-cover object-top" />
-          ) : (
-            <div className="text-4xl">🧑</div>
-          )}
+      {/* Character image - clickable for skin selection */}
+        <div className="flex flex-col items-center">
+          <div
+            onClick={() => setShowSkinModal(true)}
+            className="w-32 h-48 bg-secondary/30 rounded-lg flex items-center justify-center flex-shrink-0 cursor-pointer hover:bg-secondary/50 transition-colors border-2 border-transparent hover:border-primary/30 overflow-hidden"
+          >
+            {selectedSkin ? (
+              <img src={selectedSkin.image} alt={selectedSkin.name} className="w-full h-full object-cover object-top" />
+            ) : (
+              <div className="text-4xl">🧑</div>
+            )}
+          </div>
+          <div className="mt-1 text-sm font-bold text-primary">+12</div>
         </div>
 
         {/* Stats */}
