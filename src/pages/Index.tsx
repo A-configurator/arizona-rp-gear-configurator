@@ -198,7 +198,12 @@ const calculateYellowStats = (equippedAccessories: (Accessory | null)[]): Access
     if (!acc) return;
 
     (Object.keys(total) as (keyof AccessoryStats)[]).forEach((key) => {
-      total[key] += (acc.yellowStats?.[key] || 0) + (acc.yellowTransferStats?.[key] || 0);
+      const baseVal = acc.yellowStats?.[key] || 0;
+      const transferVal = acc.yellowTransferStats?.[key] || 0;
+
+      const normalize = (v: number) => (key === 'defense' && v < 0 ? -v : v);
+
+      total[key] += normalize(baseVal) + normalize(transferVal);
     });
   });
 
@@ -213,8 +218,18 @@ const combineTotalStats = (
   enhancementBonuses: AccessoryStats,
   yellowStats: AccessoryStats
 ): AccessoryStats => {
+  const rawDefense =
+    baseStats.defense +
+    (skinStats?.defense || 0) +
+    accessoryStats.defense +
+    enhancementBonuses.defense +
+    yellowStats.defense;
+
+  // Кап защиты: максимум 90% (как «Защита: -90% урона»)
+  const cappedDefense = Math.min(Math.max(rawDefense, 0), 90);
+
   return {
-    defense: baseStats.defense + (skinStats?.defense || 0) + accessoryStats.defense + enhancementBonuses.defense + yellowStats.defense,
+    defense: cappedDefense,
     regen: baseStats.regen + accessoryStats.regen + enhancementBonuses.regen + yellowStats.regen,
     damage: baseStats.damage + (skinStats?.damage || 0) + accessoryStats.damage + enhancementBonuses.damage + yellowStats.damage,
     luck: baseStats.luck + accessoryStats.luck + enhancementBonuses.luck + yellowStats.luck,
