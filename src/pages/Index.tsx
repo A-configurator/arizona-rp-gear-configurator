@@ -1,8 +1,8 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import { Accessory, accessories, calculateTotalStats, SLOT_NAMES, STAT_LABELS, STAT_SUFFIXES, AccessoryStats } from '@/data/accessories';
-import { X, Minus, Plus } from 'lucide-react';
+import { X, Minus, Plus, Search } from 'lucide-react';
 
-// Slot selection modal
+// Slot selection modal - compact with search
 interface SlotModalProps {
   slotNumber: number;
   accessories: Accessory[];
@@ -12,39 +12,72 @@ interface SlotModalProps {
 }
 
 const SlotModal = ({ slotNumber, accessories: slotAccessories, equippedId, onSelect, onClose }: SlotModalProps) => {
+  const [searchTerm, setSearchTerm] = useState('');
+
+  const filteredAccessories = useMemo(() => {
+    if (!searchTerm.trim()) return slotAccessories;
+    return slotAccessories.filter((acc) =>
+      acc.name.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  }, [slotAccessories, searchTerm]);
+
   return (
-    <div className="fixed inset-0 z-50 bg-background/95 flex flex-col" onClick={onClose}>
-      <div className="flex items-center justify-between p-4 border-b border-border">
-        <h2 className="text-lg font-bold arz-text-gradient">{SLOT_NAMES[slotNumber]}</h2>
-        <button onClick={onClose} className="w-8 h-8 flex items-center justify-center rounded-full bg-secondary">
-          <X className="w-5 h-5" />
-        </button>
-      </div>
-      
-      <div className="flex-1 overflow-y-auto p-4" onClick={(e) => e.stopPropagation()}>
-        <div className="grid grid-cols-3 gap-3">
-          {slotAccessories.map((acc) => (
-            <div
-              key={acc.id}
-              onClick={() => onSelect(acc)}
-              className={`
-                aspect-square bg-secondary rounded-lg flex items-center justify-center cursor-pointer
-                border-2 transition-all duration-200
-                ${equippedId === acc.id ? 'border-primary arz-glow' : 'border-border hover:border-primary/50'}
-              `}
-            >
-              <div className="text-center p-2">
-                <div className="text-xs font-medium truncate">{acc.name}</div>
-              </div>
-            </div>
-          ))}
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/80 backdrop-blur-sm" onClick={onClose}>
+      <div
+        className="w-full max-w-md max-h-[70vh] bg-card border border-border rounded-xl shadow-2xl flex flex-col overflow-hidden"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Header */}
+        <div className="flex items-center justify-between p-4 border-b border-border">
+          <h2 className="text-lg font-bold arz-text-gradient">{SLOT_NAMES[slotNumber]}</h2>
+          <button onClick={onClose} className="w-8 h-8 flex items-center justify-center rounded-full bg-secondary hover:bg-secondary/80 transition-colors">
+            <X className="w-4 h-4" />
+          </button>
+        </div>
+
+        {/* Search */}
+        <div className="p-3 border-b border-border">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+            <input
+              type="text"
+              placeholder="Поиск аксессуара..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full pl-10 pr-4 py-2 bg-secondary border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
+            />
+          </div>
         </div>
         
-        {slotAccessories.length === 0 && (
-          <div className="text-center text-muted-foreground py-8">
-            Нет аксессуаров для этого слота
+        {/* Accessories list */}
+        <div className="flex-1 overflow-y-auto p-3 arz-scrollbar">
+          <div className="grid grid-cols-2 gap-2">
+            {filteredAccessories.map((acc) => (
+              <div
+                key={acc.id}
+                onClick={() => onSelect(acc)}
+                className={`
+                  p-3 bg-secondary rounded-lg cursor-pointer
+                  border-2 transition-all duration-200
+                  ${equippedId === acc.id ? 'border-primary arz-glow' : 'border-border hover:border-primary/50'}
+                `}
+              >
+                <div className="text-xs font-medium truncate">{acc.name}</div>
+              </div>
+            ))}
           </div>
-        )}
+          
+          {filteredAccessories.length === 0 && (
+            <div className="text-center text-muted-foreground py-8 text-sm">
+              {searchTerm ? 'Ничего не найдено' : 'Нет аксессуаров для этого слота'}
+            </div>
+          )}
+        </div>
+
+        {/* Footer */}
+        <div className="p-3 border-t border-border text-center text-xs text-muted-foreground">
+          Найдено: {filteredAccessories.length}
+        </div>
       </div>
     </div>
   );
