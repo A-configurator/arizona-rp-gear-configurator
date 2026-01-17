@@ -3,23 +3,16 @@ import { Accessory, accessories, calculateTotalStats, SLOT_NAMES, AccessoryStats
 import { X, Minus, Plus, Search } from 'lucide-react';
 
 // Skins data
-interface Skin {
+export interface Skin {
   id: number;
   name: string;
   emoji: string;
 }
 
+// Скины - добавляй сюда вручную
+// Формат: { id: число, name: 'Название', emoji: '🧑' },
 const skins: Skin[] = [
-  { id: 1, name: 'Стандарт', emoji: '🧑' },
-  { id: 2, name: 'Бандит', emoji: '🥷' },
-  { id: 3, name: 'Полицейский', emoji: '👮' },
-  { id: 4, name: 'Военный', emoji: '💂' },
-  { id: 5, name: 'Медик', emoji: '👨‍⚕️' },
-  { id: 6, name: 'Бизнесмен', emoji: '🧔' },
-  { id: 7, name: 'Байкер', emoji: '🏍️' },
-  { id: 8, name: 'Гангстер', emoji: '😎' },
-  { id: 9, name: 'Рэпер', emoji: '🎤' },
-  { id: 10, name: 'Спортсмен', emoji: '🏃' },
+  // Добавляй скины здесь
 ];
 
 // Skin selection modal
@@ -277,7 +270,7 @@ const Index = () => {
   const [equippedAccessories, setEquippedAccessories] = useState<(Accessory | null)[]>(Array(8).fill(null));
   const [enhancements, setEnhancements] = useState<number[]>(Array(8).fill(14));
   const [selectedSlot, setSelectedSlot] = useState<number | null>(null);
-  const [selectedSkin, setSelectedSkin] = useState<Skin>(skins[0]);
+  const [selectedSkin, setSelectedSkin] = useState<Skin | null>(skins[0] || null);
   const [showSkinModal, setShowSkinModal] = useState(false);
 
   const totalStats = calculateTotalStats(equippedAccessories);
@@ -333,7 +326,7 @@ const Index = () => {
           onClick={() => setShowSkinModal(true)}
           className="w-32 h-48 bg-secondary/30 rounded-lg flex items-center justify-center flex-shrink-0 cursor-pointer hover:bg-secondary/50 transition-colors border-2 border-transparent hover:border-primary/30"
         >
-          <div className="text-4xl">{selectedSkin.emoji}</div>
+          <div className="text-4xl">{selectedSkin?.emoji || '🧑'}</div>
         </div>
 
         {/* Stats */}
@@ -371,7 +364,7 @@ const Index = () => {
       {/* Skin selection modal */}
       {showSkinModal && (
         <SkinModal
-          selectedSkinId={selectedSkin.id}
+          selectedSkinId={selectedSkin?.id ?? 0}
           onSelect={(skin) => {
             setSelectedSkin(skin);
             setShowSkinModal(false);
