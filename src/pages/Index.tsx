@@ -327,7 +327,7 @@ const Index = () => {
     maxArmor: 62,
   };
 
-  // Комбинированные статы: аксессуары + скин (база от заточки + индивидуальные бонусы)
+  // Комбинированные статы: аксессуары + скин (только база от заточки +12)
   const totalStats = useMemo(() => {
     const accessoryStats = calculateTotalStats(equippedAccessories);
     
@@ -337,14 +337,6 @@ const Index = () => {
         const baseValue = SKIN_BASE_STATS_AT_12[key];
         if (baseValue !== undefined) {
           accessoryStats[key] += baseValue;
-        }
-      });
-      
-      // Добавляем индивидуальные бонусы скина
-      (Object.keys(selectedSkin.stats) as (keyof AccessoryStats)[]).forEach((key) => {
-        const skinValue = selectedSkin.stats[key];
-        if (skinValue !== undefined) {
-          accessoryStats[key] += skinValue;
         }
       });
     }
