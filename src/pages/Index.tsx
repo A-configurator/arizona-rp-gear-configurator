@@ -574,40 +574,28 @@ const SlotModal = ({ slotNumber, accessories: slotAccessories, equippedId, onSel
 };
 
 
-// Combined transfer modal (base stats + yellow stats)
-interface TransferModalProps {
+// Base stats transfer modal (universal - for any accessory)
+interface BaseStatsModalProps {
   slotNumber: number;
   accessories: Accessory[];
   excludeId: number; // ID текущего аксессуара (нельзя переносить на себя)
-  onConfirm: (baseSource: Accessory | null, yellowSource: Accessory | null) => void;
+  onSelect: (accessory: Accessory) => void;
+  onSkip: () => void;
   onClose: () => void;
 }
 
-const TransferModal = ({ slotNumber, accessories: allAccessories, excludeId, onConfirm, onClose }: TransferModalProps) => {
-  const [baseSearchTerm, setBaseSearchTerm] = useState('');
-  const [yellowSearchTerm, setYellowSearchTerm] = useState('');
-  const [selectedBaseSource, setSelectedBaseSource] = useState<Accessory | null>(null);
-  const [selectedYellowSource, setSelectedYellowSource] = useState<Accessory | null>(null);
+const BaseStatsModal = ({ slotNumber, accessories: allAccessories, excludeId, onSelect, onSkip, onClose }: BaseStatsModalProps) => {
+  const [searchTerm, setSearchTerm] = useState('');
   
   // Фильтруем аксессуары этого слота, исключая себя и жёлтые аксессуары (у них нет базовых статов)
   const baseAccessories = allAccessories.filter(acc => acc.slot === slotNumber && acc.id !== excludeId && !acc.isYellowOnly);
-  
-  // Все аксессуары этого слота (для жёлтых статов)
-  const yellowAccessories = allAccessories.filter(acc => acc.slot === slotNumber && acc.id !== excludeId);
 
-  const filteredBaseOptions = useMemo(() => {
-    if (!baseSearchTerm.trim()) return baseAccessories;
+  const filteredOptions = useMemo(() => {
+    if (!searchTerm.trim()) return baseAccessories;
     return baseAccessories.filter((opt) =>
-      opt.name.toLowerCase().includes(baseSearchTerm.toLowerCase())
+      opt.name.toLowerCase().includes(searchTerm.toLowerCase())
     );
-  }, [baseAccessories, baseSearchTerm]);
-
-  const filteredYellowOptions = useMemo(() => {
-    if (!yellowSearchTerm.trim()) return yellowAccessories;
-    return yellowAccessories.filter((opt) =>
-      opt.name.toLowerCase().includes(yellowSearchTerm.toLowerCase())
-    );
-  }, [yellowAccessories, yellowSearchTerm]);
+  }, [baseAccessories, searchTerm]);
 
   const statLabels: Record<string, string> = {
     defense: 'Защита',
@@ -628,171 +616,80 @@ const TransferModal = ({ slotNumber, accessories: allAccessories, excludeId, onC
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/80 backdrop-blur-sm" onClick={onClose}>
       <div
-        className="w-full max-w-4xl max-h-[85vh] bg-card border border-border rounded-xl shadow-2xl flex flex-col overflow-hidden"
+        className="w-full max-w-md max-h-[80vh] bg-card border border-border rounded-xl shadow-2xl flex flex-col overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b border-border">
-          <h2 className="text-lg font-bold">ПЕРЕНОС ХАРАКТЕРИСТИК</h2>
+          <h2 className="text-lg font-bold text-destructive">ПЕРЕНОС БАЗОВЫХ ХАРАКТЕРИСТИК</h2>
           <button onClick={onClose} className="w-8 h-8 flex items-center justify-center rounded-full bg-secondary hover:bg-secondary/80 transition-colors">
             <X className="w-4 h-4" />
           </button>
         </div>
 
-        {/* Two columns */}
-        <div className="flex-1 flex overflow-hidden">
-          {/* Left column - Base stats */}
-          <div className="flex-1 flex flex-col border-r border-border">
-            <div className="p-3 border-b border-border bg-destructive/10">
-              <h3 className="text-sm font-bold text-destructive mb-2">ОБЫЧНЫЙ ПЕРЕНОС</h3>
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                <input
-                  type="text"
-                  placeholder="Поиск..."
-                  value={baseSearchTerm}
-                  onChange={(e) => setBaseSearchTerm(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2 bg-secondary border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-destructive/50"
-                />
-              </div>
-            </div>
-            
-            <div className="flex-1 overflow-y-auto p-3 arz-scrollbar">
-              <div className="grid grid-cols-2 gap-2">
-                {filteredBaseOptions.map((opt) => {
-                  const statsToShow = Object.entries(opt.stats).filter(([_, value]) => value !== 0);
-                  const isSelected = selectedBaseSource?.id === opt.id;
-                  return (
-                    <div
-                      key={opt.id}
-                      onClick={() => setSelectedBaseSource(isSelected ? null : opt)}
-                      className={`p-2 bg-secondary rounded-lg cursor-pointer flex flex-col items-center gap-1 border-2 transition-all duration-200 ${
-                        isSelected ? 'border-destructive arz-glow' : 'border-border hover:border-destructive/50'
-                      }`}
-                    >
-                      {opt.imageUrl && (
-                        <img src={opt.imageUrl} alt={opt.name} className="w-12 h-12 object-contain" />
-                      )}
-                      <div className="text-[10px] font-medium truncate w-full text-center">{opt.name}</div>
-                      {statsToShow.length > 0 && (
-                        <div className="text-[8px] text-center leading-tight space-y-0.5 w-full">
-                          {statsToShow.slice(0, 3).map(([key, value]) => (
-                            <div key={key}>
-                              <span className="text-destructive">{statLabels[key] || key}: </span>
-                              <span className="text-foreground">+{value}</span>
-                            </div>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
-              
-              {filteredBaseOptions.length === 0 && (
-                <div className="text-center text-muted-foreground py-8 text-sm">
-                  {baseSearchTerm ? 'Ничего не найдено' : 'Нет аксессуаров'}
-                </div>
-              )}
-            </div>
-
-            {/* Selection indicator */}
-            <div className="p-2 border-t border-border bg-secondary/50">
-              <div className="text-xs text-center">
-                {selectedBaseSource ? (
-                  <span className="text-destructive font-medium">Выбрано: {selectedBaseSource.name}</span>
-                ) : (
-                  <span className="text-muted-foreground">Не выбрано</span>
-                )}
-              </div>
-            </div>
-          </div>
-
-          {/* Right column - Yellow stats */}
-          <div className="flex-1 flex flex-col">
-            <div className="p-3 border-b border-border bg-yellow-400/10">
-              <h3 className="text-sm font-bold text-yellow-400 mb-2">ПЕРЕНОС ЖЁЛТЫХ ХА</h3>
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                <input
-                  type="text"
-                  placeholder="Поиск..."
-                  value={yellowSearchTerm}
-                  onChange={(e) => setYellowSearchTerm(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2 bg-secondary border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-yellow-400/50"
-                />
-              </div>
-            </div>
-            
-            <div className="flex-1 overflow-y-auto p-3 arz-scrollbar">
-              <div className="grid grid-cols-2 gap-2">
-                {filteredYellowOptions.map((opt) => {
-                  const stats = opt.isYellowOnly ? opt.yellowStats : opt.yellowStats;
-                  const statsToShow = stats ? Object.entries(stats).filter(([_, value]) => value !== 0) : [];
-                  const isSelected = selectedYellowSource?.id === opt.id;
-                  return (
-                    <div
-                      key={opt.id}
-                      onClick={() => setSelectedYellowSource(isSelected ? null : opt)}
-                      className={`p-2 bg-secondary rounded-lg cursor-pointer flex flex-col items-center gap-1 border-2 transition-all duration-200 ${
-                        isSelected ? 'border-yellow-400 arz-glow' : 'border-border hover:border-yellow-400/50'
-                      }`}
-                    >
-                      {opt.imageUrl && (
-                        <img src={opt.imageUrl} alt={opt.name} className="w-12 h-12 object-contain" />
-                      )}
-                      <div className="text-[10px] font-medium truncate w-full text-center">{opt.name}</div>
-                      {opt.isYellowOnly && (
-                        <div className="text-[9px] font-medium text-yellow-400">Жёлтый акс</div>
-                      )}
-                      {statsToShow.length > 0 && (
-                        <div className="text-[8px] text-center leading-tight space-y-0.5 w-full">
-                          {statsToShow.slice(0, 3).map(([key, value]) => (
-                            <div key={key}>
-                              <span className="text-yellow-400">{statLabels[key] || key}: </span>
-                              <span className="text-foreground">+{value}</span>
-                            </div>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
-              
-              {filteredYellowOptions.length === 0 && (
-                <div className="text-center text-muted-foreground py-8 text-sm">
-                  {yellowSearchTerm ? 'Ничего не найдено' : 'Нет аксессуаров'}
-                </div>
-              )}
-            </div>
-
-            {/* Selection indicator */}
-            <div className="p-2 border-t border-border bg-secondary/50">
-              <div className="text-xs text-center">
-                {selectedYellowSource ? (
-                  <span className="text-yellow-400 font-medium">Выбрано: {selectedYellowSource.name}</span>
-                ) : (
-                  <span className="text-muted-foreground">Не выбрано</span>
-                )}
-              </div>
-            </div>
+        {/* Search */}
+        <div className="p-3 border-b border-border">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+            <input
+              type="text"
+              placeholder="Поиск..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full pl-10 pr-4 py-2 bg-secondary border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-destructive/50"
+            />
           </div>
         </div>
+        
+        {/* Options list */}
+        <div className="flex-1 overflow-y-auto p-3 arz-scrollbar">
+          <div className="grid grid-cols-2 gap-2">
+            {filteredOptions.map((opt) => {
+              // Показываем базовые статы или жёлтые статы (если это isYellowOnly)
+              const stats = opt.isYellowOnly ? opt.yellowStats : opt.stats;
+              const statsToShow = stats ? Object.entries(stats).filter(([_, value]) => value !== 0) : [];
+              return (
+                <div
+                  key={opt.id}
+                  onClick={() => onSelect(opt)}
+                  className="p-2 bg-secondary rounded-lg cursor-pointer flex flex-col items-center gap-1 border-2 border-border hover:border-destructive/50 transition-all duration-200"
+                >
+                  {opt.imageUrl && (
+                    <img src={opt.imageUrl} alt={opt.name} className="w-14 h-14 object-contain" />
+                  )}
+                  <div className="text-[10px] font-medium truncate w-full text-center">{opt.name}</div>
+                  {opt.isYellowOnly && (
+                    <div className="text-[9px] font-medium text-yellow-400">Жёлтый аксессуар</div>
+                  )}
+                  {statsToShow.length > 0 && (
+                    <div className="text-[8px] text-center leading-tight space-y-0.5 w-full">
+                      {statsToShow.map(([key, value]) => (
+                        <div key={key}>
+                          <span className={opt.isYellowOnly ? 'text-yellow-400' : 'text-destructive'}>{statLabels[key] || key}: </span>
+                          <span className="text-foreground">+{value}</span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+          
+          {filteredOptions.length === 0 && (
+            <div className="text-center text-muted-foreground py-8 text-sm">
+              {searchTerm ? 'Ничего не найдено' : 'Нет доступных аксессуаров'}
+            </div>
+          )}
+        </div>
 
-        {/* Footer with confirm button */}
-        <div className="p-3 border-t border-border flex gap-2">
+        {/* Footer with skip button */}
+        <div className="p-3 border-t border-border">
           <button
-            onClick={() => onConfirm(null, null)}
-            className="flex-1 py-2.5 px-4 bg-secondary text-foreground border border-border rounded-lg text-sm font-medium hover:bg-secondary/80 transition-colors"
+            onClick={onSkip}
+            className="w-full py-2.5 px-4 bg-secondary text-foreground border border-border rounded-lg text-sm font-medium hover:bg-secondary/80 transition-colors"
           >
             Не переносить
-          </button>
-          <button
-            onClick={() => onConfirm(selectedBaseSource, selectedYellowSource)}
-            className="flex-1 py-2.5 px-4 bg-primary text-primary-foreground rounded-lg text-sm font-medium hover:bg-primary/90 transition-colors"
-          >
-            Применить
           </button>
         </div>
       </div>
@@ -938,7 +835,8 @@ const Index = () => {
   const [showSkinModal, setShowSkinModal] = useState(false);
   const [slot6Type, setSlot6Type] = useState<AccessoryType>('attack');
   const [pendingAccessory, setPendingAccessory] = useState<Accessory | null>(null);
-  const [showTransferModal, setShowTransferModal] = useState(false);
+  const [showYellowModal, setShowYellowModal] = useState(false);
+  const [showBaseStatsModal, setShowBaseStatsModal] = useState(false);
   const [selectedYellowStatsSource, setSelectedYellowStatsSource] = useState<(Accessory | null)[]>(Array(8).fill(null)); // Источник жёлтых
   const [selectedBaseStatsSource, setSelectedBaseStatsSource] = useState<(Accessory | null)[]>(Array(8).fill(null)); // Источник базовых
 
@@ -947,44 +845,90 @@ const Index = () => {
   const enhancementBonuses = useMemo(() => calculateEnhancementBonuses(enhancements, equippedAccessories, slot6Type), [enhancements, equippedAccessories, slot6Type]);
   const totalStats = combineTotalStats(BASE_STATS, selectedSkin?.stats || null, accessoryStats, enhancementBonuses, yellowStats);
 
-  // Когда выбирают аксессуар - показываем объединённую модалку переноса
+  // Когда выбирают аксессуар - всегда показываем модалку переноса базовых
   const handleSelectAccessory = useCallback((accessory: Accessory) => {
     setPendingAccessory(accessory);
     setSelectedSlot(null);
-    setShowTransferModal(true);
+    setShowBaseStatsModal(true);
   }, []);
 
-  // Подтверждаем перенос (и базовых, и жёлтых одновременно)
-  const handleConfirmTransfer = useCallback((baseSource: Accessory | null, yellowSource: Accessory | null) => {
+  // Выбрали базовые характеристики для переноса
+  const handleSelectBaseStats = useCallback((sourceAccessory: Accessory) => {
     if (pendingAccessory) {
-      // Формируем итоговый аксессуар
-      const finalAccessory: Accessory = {
+      // Добавляем базовые статы от источника
+      const updatedAccessory: Accessory = {
         ...pendingAccessory,
-        stats: baseSource ? { ...baseSource.stats } : pendingAccessory.stats,
-        yellowStats: yellowSource?.yellowStats ? { ...yellowSource.yellowStats } : pendingAccessory.yellowStats,
+        stats: { ...sourceAccessory.stats },
       };
-
-      // Устанавливаем аксессуар
-      setEquippedAccessories((prev) => {
-        const newEquipped = [...prev];
-        newEquipped[pendingAccessory.slot - 1] = finalAccessory;
-        return newEquipped;
-      });
-
-      // Сохраняем источники
+      setPendingAccessory(updatedAccessory);
+      // Сохраняем источник базовых статов
       setSelectedBaseStatsSource((prev) => {
         const newSources = [...prev];
-        newSources[pendingAccessory.slot - 1] = baseSource;
+        newSources[pendingAccessory.slot - 1] = sourceAccessory;
         return newSources;
       });
+    }
+    setShowBaseStatsModal(false);
+    // Переходим к выбору жёлтых
+    setShowYellowModal(true);
+  }, [pendingAccessory]);
+
+  // Пропустить перенос базовых характеристик
+  const handleSkipBaseStats = useCallback(() => {
+    if (pendingAccessory) {
+      // Очищаем источник базовых статов
+      setSelectedBaseStatsSource((prev) => {
+        const newSources = [...prev];
+        newSources[pendingAccessory.slot - 1] = null;
+        return newSources;
+      });
+    }
+    setShowBaseStatsModal(false);
+    // Переходим к выбору жёлтых
+    setShowYellowModal(true);
+  }, [pendingAccessory]);
+
+  // Выбрали жёлтые характеристики для переноса
+  const handleSelectYellowStats = useCallback((sourceAccessory: Accessory) => {
+    if (pendingAccessory) {
+      const yellowSource = sourceAccessory.yellowStats || sourceAccessory.yellowStats;
+      const accessoryWithYellow: Accessory = {
+        ...pendingAccessory,
+        yellowStats: yellowSource ? { ...yellowSource } : undefined,
+      };
+      setEquippedAccessories((prev) => {
+        const newEquipped = [...prev];
+        newEquipped[pendingAccessory.slot - 1] = accessoryWithYellow;
+        return newEquipped;
+      });
+      // Сохраняем источник жёлтых статов
       setSelectedYellowStatsSource((prev) => {
         const newSources = [...prev];
-        newSources[pendingAccessory.slot - 1] = yellowSource;
+        newSources[pendingAccessory.slot - 1] = sourceAccessory;
         return newSources;
       });
     }
     setPendingAccessory(null);
-    setShowTransferModal(false);
+    setShowYellowModal(false);
+  }, [pendingAccessory]);
+
+  // Пропустить выбор жёлтых
+  const handleSkipYellow = useCallback(() => {
+    if (pendingAccessory) {
+      setEquippedAccessories((prev) => {
+        const newEquipped = [...prev];
+        newEquipped[pendingAccessory.slot - 1] = pendingAccessory;
+        return newEquipped;
+      });
+      // Очищаем источник жёлтых статов
+      setSelectedYellowStatsSource((prev) => {
+        const newSources = [...prev];
+        newSources[pendingAccessory.slot - 1] = null;
+        return newSources;
+      });
+    }
+    setPendingAccessory(null);
+    setShowYellowModal(false);
   }, [pendingAccessory]);
 
   const handleUnequip = useCallback((slotIndex: number) => {
@@ -1077,16 +1021,32 @@ const Index = () => {
         />
       )}
 
-      {/* Transfer modal (base + yellow stats) */}
-      {showTransferModal && pendingAccessory && (
-        <TransferModal
+      {/* Yellow stats transfer modal */}
+      {showYellowModal && pendingAccessory && (
+        <YellowTransferModal
           slotNumber={pendingAccessory.slot}
           accessories={accessories}
           excludeId={pendingAccessory.id}
-          onConfirm={handleConfirmTransfer}
+          onSelect={handleSelectYellowStats}
+          onSkip={handleSkipYellow}
           onClose={() => {
             setPendingAccessory(null);
-            setShowTransferModal(false);
+            setShowYellowModal(false);
+          }}
+        />
+      )}
+
+      {/* Base stats transfer modal */}
+      {showBaseStatsModal && pendingAccessory && (
+        <BaseStatsModal
+          slotNumber={pendingAccessory.slot}
+          accessories={accessories}
+          excludeId={pendingAccessory.id}
+          onSelect={handleSelectBaseStats}
+          onSkip={handleSkipBaseStats}
+          onClose={() => {
+            setPendingAccessory(null);
+            setShowBaseStatsModal(false);
           }}
         />
       )}
