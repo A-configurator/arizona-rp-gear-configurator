@@ -144,6 +144,18 @@ import watchGucciImg from '@/assets/slot3-yellow/watch-gucci.png';
 import watchPatekImg from '@/assets/slot3-yellow/watch-patek.png';
 import watchAppleImg from '@/assets/slot3-yellow/watch-apple.png';
 
+// Импорты аксессуаров слота 4 (Шея)
+import machinatorChainImg from '@/assets/slot4-neck/machinator-chain.png';
+import energyMachinatorImg from '@/assets/slot4-neck/energy-machinator.png';
+import magicSphereImg from '@/assets/slot4-neck/magic-sphere.png';
+import swagChainImg from '@/assets/slot4-neck/swag-chain.png';
+import svagaChainImg from '@/assets/slot4-neck/svaga-chain.png';
+import flyingSnowflakesImg from '@/assets/slot4-neck/flying-snowflakes.png';
+
+// Импорты жёлтых аксессуаров слота 4 (только с жёлтыми характеристиками)
+import illuminatiChainImg from '@/assets/slot4-yellow/illuminati-chain.png';
+import giantChainImg from '@/assets/slot4-yellow/giant-chain.png';
+
 // Аксессуары Arizona RP
 export const accessories: Accessory[] = [
   // ===== СЛОТ 1 - ГОЛОВА =====
@@ -730,6 +742,92 @@ export const accessories: Accessory[] = [
     stats: { ...emptyStats },
     yellowStats: { ...emptyStats, defense: 1, maxHp: 5 },
     imageUrl: watchAppleImg,
+    isYellowOnly: true,
+  },
+  // ===== СЛОТ 4 - ШЕЯ =====
+  {
+    id: 701,
+    name: 'Цепь «Махинатор»',
+    slot: 4,
+    slotName: 'Шея',
+    description: 'Цепь с символом махинатора',
+    rarity: 'epic',
+    stats: { ...emptyStats, defense: 2, damage: 1, luck: 10, maxArmor: 25 },
+    imageUrl: machinatorChainImg,
+  },
+  {
+    id: 702,
+    name: 'Энергетический махинатор',
+    slot: 4,
+    slotName: 'Шея',
+    description: 'Энергетическая версия махинатора',
+    rarity: 'legendary',
+    stats: { ...emptyStats, defense: 4, damage: 4, luck: 12, maxHp: 5, maxArmor: 25 },
+    imageUrl: energyMachinatorImg,
+  },
+  {
+    id: 703,
+    name: 'Магическая сфера',
+    slot: 4,
+    slotName: 'Шея',
+    description: 'Парящая магическая сфера',
+    rarity: 'legendary',
+    stats: { ...emptyStats, defense: 2, luck: 16 },
+    imageUrl: magicSphereImg,
+  },
+  {
+    id: 704,
+    name: 'Цепь SWAG',
+    slot: 4,
+    slotName: 'Шея',
+    description: 'Цепь с надписью SWAG',
+    rarity: 'epic',
+    stats: { ...emptyStats, defense: 2, damage: 1, luck: 10, maxArmor: 25 },
+    imageUrl: swagChainImg,
+  },
+  {
+    id: 705,
+    name: 'Цепь СВАГА',
+    slot: 4,
+    slotName: 'Шея',
+    description: 'Цепь с надписью СВАГА',
+    rarity: 'epic',
+    stats: { ...emptyStats, defense: 2, damage: 1, luck: 10, maxArmor: 25 },
+    imageUrl: svagaChainImg,
+  },
+  {
+    id: 706,
+    name: 'Летающие снежинки',
+    slot: 4,
+    slotName: 'Шея',
+    description: 'Парящие снежинки вокруг шеи',
+    rarity: 'rare',
+    stats: { ...emptyStats },
+    imageUrl: flyingSnowflakesImg,
+  },
+  // ===== СЛОТ 4 - ШЕЯ (ТОЛЬКО ЖЁЛТЫЕ ХАРАКТЕРИСТИКИ) =====
+  {
+    id: 801,
+    name: 'Цепь Иллюмината',
+    slot: 4,
+    slotName: 'Шея',
+    description: 'Цепь с символом иллюминатов',
+    rarity: 'epic',
+    stats: { ...emptyStats },
+    yellowStats: { ...emptyStats, defense: 1, damage: 1 },
+    imageUrl: illuminatiChainImg,
+    isYellowOnly: true,
+  },
+  {
+    id: 802,
+    name: 'Цепь Гиганта',
+    slot: 4,
+    slotName: 'Шея',
+    description: 'Массивная цепь гиганта',
+    rarity: 'legendary',
+    stats: { ...emptyStats },
+    yellowStats: { ...emptyStats, maxHp: 15, maxArmor: 15 },
+    imageUrl: giantChainImg,
     isYellowOnly: true,
   },
 ];
