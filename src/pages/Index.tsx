@@ -587,16 +587,17 @@ interface EquipmentSlotProps {
   onEnhance: (delta: number) => void;
   slot6Type?: AccessoryType;
   onSlot6TypeChange?: (type: AccessoryType) => void;
+  yellowStatsSource?: YellowStatsOption | null; // Источник жёлтых характеристик
 }
 
-const EquipmentSlot = ({ slotNumber, equipped, enhancement, onSlotClick, onEnhance, slot6Type, onSlot6TypeChange }: EquipmentSlotProps) => {
+const EquipmentSlot = ({ slotNumber, equipped, enhancement, onSlotClick, onEnhance, slot6Type, onSlot6TypeChange, yellowStatsSource }: EquipmentSlotProps) => {
   return (
     <div className="flex flex-col">
       <div
         onClick={onSlotClick}
         className={`
           aspect-square bg-secondary rounded-lg flex items-center justify-center cursor-pointer
-          border-2 transition-all duration-200 mb-1
+          border-2 transition-all duration-200 mb-1 relative
           ${equipped ? 'border-primary/50' : 'border-border hover:border-primary/30'}
         `}
       >
@@ -610,6 +611,13 @@ const EquipmentSlot = ({ slotNumber, equipped, enhancement, onSlotClick, onEnhan
           </div>
         ) : (
           <div className="text-xs text-muted-foreground">{SLOT_NAMES[slotNumber]}</div>
+        )}
+        
+        {/* Yellow stats source icon - top right corner */}
+        {yellowStatsSource && equipped && (
+          <div className="absolute -top-1 -right-1 w-6 h-6 rounded-full border-2 border-yellow-400 overflow-hidden bg-background">
+            <img src={yellowStatsSource.imageUrl} alt={yellowStatsSource.name} className="w-full h-full object-contain" />
+          </div>
         )}
       </div>
       
@@ -667,8 +675,9 @@ const Index = () => {
   const [selectedSkin, setSelectedSkin] = useState<Skin | null>(null);
   const [showSkinModal, setShowSkinModal] = useState(false);
   const [slot6Type, setSlot6Type] = useState<AccessoryType>('attack');
-  const [pendingAccessory, setPendingAccessory] = useState<Accessory | null>(null); // Аксессуар ожидающий выбора жёлтых
+  const [pendingAccessory, setPendingAccessory] = useState<Accessory | null>(null);
   const [showYellowModal, setShowYellowModal] = useState(false);
+  const [selectedYellowStats, setSelectedYellowStats] = useState<(YellowStatsOption | null)[]>(Array(8).fill(null)); // Выбранные жёлтые для каждого слота
 
   const accessoryStats = calculateTotalStats(equippedAccessories);
   const yellowStats = useMemo(() => calculateYellowStats(equippedAccessories), [equippedAccessories]);
@@ -718,6 +727,12 @@ const Index = () => {
         const newEquipped = [...prev];
         newEquipped[pendingAccessory.slot - 1] = accessoryWithYellow;
         return newEquipped;
+      });
+      // Сохраняем выбранный жёлтый стат для отображения иконки
+      setSelectedYellowStats((prev) => {
+        const newYellow = [...prev];
+        newYellow[pendingAccessory.slot - 1] = yellowOption;
+        return newYellow;
       });
     }
     setPendingAccessory(null);
@@ -783,7 +798,9 @@ const Index = () => {
             {selectedSkin ? (
               <img src={selectedSkin.image} alt={selectedSkin.name} className="w-full h-full object-cover object-top" />
             ) : (
-              <div className="text-4xl">🧑</div>
+              <div className="text-center p-2">
+                <div className="text-xs text-muted-foreground leading-tight">Любой дефолт скин</div>
+              </div>
             )}
           </div>
           <div className="mt-1 text-sm font-bold text-primary">+12</div>
@@ -807,6 +824,7 @@ const Index = () => {
             onEnhance={(delta) => handleEnhance(slotNum - 1, delta)}
             slot6Type={slot6Type}
             onSlot6TypeChange={setSlot6Type}
+            yellowStatsSource={selectedYellowStats[slotNum - 1]}
           />
         ))}
       </div>
