@@ -2,17 +2,44 @@ import { useState, useCallback, useMemo } from 'react';
 import { Accessory, accessories, calculateTotalStats, SLOT_NAMES, AccessoryStats } from '@/data/accessories';
 import { X, Minus, Plus, Search } from 'lucide-react';
 
+// Skin images
+import spaceFarmerImg from '@/assets/skins/space-farmer.png';
+import suidniSweeneyImg from '@/assets/skins/suidni-sweeney.png';
+import antManImg from '@/assets/skins/ant-man.png';
+import meguImg from '@/assets/skins/megu.png';
+import bloodAngelImg from '@/assets/skins/blood-angel.png';
+import spaceMarineImg from '@/assets/skins/space-marine.png';
+import altGirlImg from '@/assets/skins/alt-girl.png';
+import spetsnazImg from '@/assets/skins/spetsnaz.png';
+import deadpoolImg from '@/assets/skins/deadpool.png';
+import danjiImg from '@/assets/skins/danji.png';
+
 // Skins data
+export interface SkinStats {
+  defense?: number;
+  damage?: number;
+  reflect?: number;
+  maxArmor?: number;
+}
+
 export interface Skin {
   id: number;
   name: string;
-  emoji: string;
+  image: string;
+  stats: SkinStats;
 }
 
-// Скины - добавляй сюда вручную
-// Формат: { id: число, name: 'Название', emoji: '🧑' },
 const skins: Skin[] = [
-  // Добавляй скины здесь
+  { id: 1, name: 'Космический Фермер', image: spaceFarmerImg, stats: { defense: 2, damage: 2, reflect: 3, maxArmor: 50 } },
+  { id: 2, name: 'Суидни Суини', image: suidniSweeneyImg, stats: { defense: 2, damage: 2, reflect: 3 } },
+  { id: 3, name: 'Человек-муравей', image: antManImg, stats: { defense: 2, damage: 2, reflect: 3 } },
+  { id: 4, name: 'Мэгу', image: meguImg, stats: { defense: 2, damage: 2, reflect: 3 } },
+  { id: 5, name: 'Кровавый Ангел', image: bloodAngelImg, stats: { defense: 2, damage: 2, reflect: 3 } },
+  { id: 6, name: 'Космодесантник', image: spaceMarineImg, stats: { defense: 2, damage: 2, reflect: 3 } },
+  { id: 7, name: 'Альтушка', image: altGirlImg, stats: { maxArmor: 100 } },
+  { id: 8, name: 'Спецназовец', image: spetsnazImg, stats: { defense: 2, damage: 2, reflect: 3 } },
+  { id: 9, name: 'Дэдпул', image: deadpoolImg, stats: { damage: 2, reflect: 3 } },
+  { id: 10, name: 'Данджи', image: danjiImg, stats: { defense: 2, damage: 2, reflect: 3 } },
 ];
 
 // Skin selection modal
@@ -68,13 +95,13 @@ const SkinModal = ({ selectedSkinId, onSelect, onClose }: SkinModalProps) => {
                 key={skin.id}
                 onClick={() => onSelect(skin)}
                 className={`
-                  p-3 bg-secondary rounded-lg cursor-pointer flex flex-col items-center gap-2
+                  p-2 bg-secondary rounded-lg cursor-pointer flex flex-col items-center gap-1
                   border-2 transition-all duration-200
                   ${selectedSkinId === skin.id ? 'border-primary arz-glow' : 'border-border hover:border-primary/50'}
                 `}
               >
-                <span className="text-3xl">{skin.emoji}</span>
-                <div className="text-xs font-medium truncate w-full text-center">{skin.name}</div>
+                <img src={skin.image} alt={skin.name} className="w-16 h-20 object-cover object-top rounded" />
+                <div className="text-[10px] font-medium truncate w-full text-center">{skin.name}</div>
               </div>
             ))}
           </div>
@@ -324,9 +351,13 @@ const Index = () => {
         {/* Character image - clickable for skin selection */}
         <div
           onClick={() => setShowSkinModal(true)}
-          className="w-32 h-48 bg-secondary/30 rounded-lg flex items-center justify-center flex-shrink-0 cursor-pointer hover:bg-secondary/50 transition-colors border-2 border-transparent hover:border-primary/30"
+          className="w-32 h-48 bg-secondary/30 rounded-lg flex items-center justify-center flex-shrink-0 cursor-pointer hover:bg-secondary/50 transition-colors border-2 border-transparent hover:border-primary/30 overflow-hidden"
         >
-          <div className="text-4xl">{selectedSkin?.emoji || '🧑'}</div>
+          {selectedSkin ? (
+            <img src={selectedSkin.image} alt={selectedSkin.name} className="w-full h-full object-cover object-top" />
+          ) : (
+            <div className="text-4xl">🧑</div>
+          )}
         </div>
 
         {/* Stats */}
