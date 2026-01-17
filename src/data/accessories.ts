@@ -1103,7 +1103,9 @@ export const calculateTotalStats = (equippedAccessories: (Accessory | null)[]): 
       const normalized = key === 'defense' && val < 0 ? -val : val;
       
       // Встроенные характеристики дают в 2 раза меньше (перенесённые — полные)
-      const finalVal = hasTransfer ? normalized : Math.floor(normalized / 2);
+      // Исключение: 5-й слот даёт полные статы
+      const isSlot5 = acc.slot === 5;
+      const finalVal = hasTransfer || isSlot5 ? normalized : Math.floor(normalized / 2);
       total[key] += finalVal;
     });
   });
