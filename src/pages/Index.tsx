@@ -487,8 +487,12 @@ const EquipmentSlot = ({ slotNumber, equipped, enhancement, onSlotClick, onEnhan
         `}
       >
         {equipped ? (
-          <div className="text-center p-1">
-            <div className="text-[10px] font-medium truncate px-1">{equipped.name}</div>
+          <div className="text-center p-1 flex flex-col items-center justify-center w-full h-full">
+            {equipped.imageUrl ? (
+              <img src={equipped.imageUrl} alt={equipped.name} className="w-12 h-12 object-contain" />
+            ) : (
+              <div className="text-[10px] font-medium truncate px-1">{equipped.name}</div>
+            )}
           </div>
         ) : (
           <div className="text-xs text-muted-foreground">{SLOT_NAMES[slotNumber]}</div>
