@@ -865,46 +865,50 @@ const Index = () => {
 
   // Выбрали жёлтые характеристики для переноса
   const handleSelectYellowStats = useCallback((sourceAccessory: Accessory) => {
-    if (pendingAccessory) {
-      const yellowSource = sourceAccessory.yellowStats || sourceAccessory.yellowStats;
-      const accessoryWithYellow: Accessory = {
-        ...pendingAccessory,
-        yellowStats: yellowSource ? { ...yellowSource } : undefined,
-      };
-      setEquippedAccessories((prev) => {
-        const newEquipped = [...prev];
-        newEquipped[pendingAccessory.slot - 1] = accessoryWithYellow;
-        return newEquipped;
-      });
-      // Сохраняем источник жёлтых статов
-      setSelectedYellowStatsSource((prev) => {
-        const newSources = [...prev];
-        newSources[pendingAccessory.slot - 1] = sourceAccessory;
-        return newSources;
-      });
-    }
-    setPendingAccessory(null);
+    setPendingAccessory((currentPending) => {
+      if (currentPending) {
+        const yellowSource = sourceAccessory.yellowStats;
+        const accessoryWithYellow: Accessory = {
+          ...currentPending,
+          yellowStats: yellowSource ? { ...yellowSource } : undefined,
+        };
+        setEquippedAccessories((prev) => {
+          const newEquipped = [...prev];
+          newEquipped[currentPending.slot - 1] = accessoryWithYellow;
+          return newEquipped;
+        });
+        // Сохраняем источник жёлтых статов
+        setSelectedYellowStatsSource((prev) => {
+          const newSources = [...prev];
+          newSources[currentPending.slot - 1] = sourceAccessory;
+          return newSources;
+        });
+      }
+      return null;
+    });
     setShowYellowModal(false);
-  }, [pendingAccessory]);
+  }, []);
 
   // Пропустить выбор жёлтых
   const handleSkipYellow = useCallback(() => {
-    if (pendingAccessory) {
-      setEquippedAccessories((prev) => {
-        const newEquipped = [...prev];
-        newEquipped[pendingAccessory.slot - 1] = pendingAccessory;
-        return newEquipped;
-      });
-      // Очищаем источник жёлтых статов
-      setSelectedYellowStatsSource((prev) => {
-        const newSources = [...prev];
-        newSources[pendingAccessory.slot - 1] = null;
-        return newSources;
-      });
-    }
-    setPendingAccessory(null);
+    setPendingAccessory((currentPending) => {
+      if (currentPending) {
+        setEquippedAccessories((prev) => {
+          const newEquipped = [...prev];
+          newEquipped[currentPending.slot - 1] = currentPending;
+          return newEquipped;
+        });
+        // Очищаем источник жёлтых статов
+        setSelectedYellowStatsSource((prev) => {
+          const newSources = [...prev];
+          newSources[currentPending.slot - 1] = null;
+          return newSources;
+        });
+      }
+      return null;
+    });
     setShowYellowModal(false);
-  }, [pendingAccessory]);
+  }, []);
 
   const handleUnequip = useCallback((slotIndex: number) => {
     setEquippedAccessories((prev) => {
