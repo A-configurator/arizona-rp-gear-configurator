@@ -750,9 +750,9 @@ const EquipmentSlot = ({ slotNumber, equipped, enhancement, onSlotClick, onEnhan
           </div>
         )}
         
-        {/* Base stats source icon - top right corner (for yellow-only accessories) */}
+        {/* Base stats source icon - top LEFT corner (for yellow-only accessories) */}
         {baseStatsSource && equipped && equipped.isYellowOnly && (
-          <div className="absolute -top-2 -right-2 w-12 h-12 rounded-full border-2 border-destructive overflow-hidden bg-background">
+          <div className="absolute -top-2 -left-2 w-12 h-12 rounded-full border-2 border-destructive overflow-hidden bg-background">
             <img src={baseStatsSource.imageUrl} alt={baseStatsSource.name} className="w-full h-full object-contain" />
           </div>
         )}
