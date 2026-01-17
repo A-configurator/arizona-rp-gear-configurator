@@ -170,6 +170,17 @@ import mineSkeletonImg from '@/assets/slot5-shoulder/mine-skeleton.png';
 // Импорты жёлтых аксессуаров слота 5 (только с жёлтыми характеристиками)
 import arcanaIoImg from '@/assets/slot5-yellow/arcana-io.png';
 
+// Импорты аксессуаров слота 6 (Спина)
+import thorHammerImg from '@/assets/slot6-back/thor-hammer.png';
+import jayceHammerImg from '@/assets/slot6-back/jayce-hammer.png';
+import russianAxeImg from '@/assets/slot6-back/russian-axe.png';
+import captainShieldImg from '@/assets/slot6-back/captain-shield.png';
+import magmaAxeImg from '@/assets/slot6-back/magma-axe.png';
+import iceSwordImg from '@/assets/slot6-back/ice-sword.png';
+import energyShieldImg from '@/assets/slot6-back/energy-shield.png';
+import comptonBatImg from '@/assets/slot6-back/compton-bat.png';
+import goldenCrowbarImg from '@/assets/slot6-back/golden-crowbar.png';
+
 // Аксессуары Arizona RP
 export const accessories: Accessory[] = [
   // ===== СЛОТ 1 - ГОЛОВА =====
@@ -947,6 +958,106 @@ export const accessories: Accessory[] = [
     yellowStats: { ...emptyStats, defense: 2, damage: 1, luck: 1, maxHp: 10 },
     imageUrl: arcanaIoImg,
     isYellowOnly: true,
+  },
+  // ===== СЛОТ 6 - СПИНА =====
+  {
+    id: 601,
+    name: 'Молот Тора',
+    slot: 6,
+    slotName: 'Спина',
+    description: 'Легендарный молот бога грома',
+    rarity: 'legendary',
+    stats: { ...emptyStats, damage: 4 },
+    accessoryType: 'attack',
+    imageUrl: thorHammerImg,
+  },
+  {
+    id: 602,
+    name: 'Молот Джейса',
+    slot: 6,
+    slotName: 'Спина',
+    description: 'Мощный молот Джейса',
+    rarity: 'epic',
+    stats: { ...emptyStats, damage: 4 },
+    accessoryType: 'attack',
+    imageUrl: jayceHammerImg,
+  },
+  {
+    id: 603,
+    name: 'Русский боевой топор',
+    slot: 6,
+    slotName: 'Спина',
+    description: 'Грозное русское оружие',
+    rarity: 'rare',
+    stats: { ...emptyStats, defense: -4 },
+    accessoryType: 'defense',
+    imageUrl: russianAxeImg,
+  },
+  {
+    id: 604,
+    name: 'Щит Капитана Америки',
+    slot: 6,
+    slotName: 'Спина',
+    description: 'Вибраниумный щит супергероя',
+    rarity: 'legendary',
+    stats: { ...emptyStats, defense: -4 },
+    accessoryType: 'defense',
+    imageUrl: captainShieldImg,
+  },
+  {
+    id: 605,
+    name: 'Магмовый топор',
+    slot: 6,
+    slotName: 'Спина',
+    description: 'Топор с огненной магмой',
+    rarity: 'epic',
+    stats: { ...emptyStats, defense: -4 },
+    accessoryType: 'defense',
+    imageUrl: magmaAxeImg,
+  },
+  {
+    id: 606,
+    name: 'Ледяной меч',
+    slot: 6,
+    slotName: 'Спина',
+    description: 'Меч вечной мерзлоты',
+    rarity: 'epic',
+    stats: { ...emptyStats, defense: -4 },
+    accessoryType: 'defense',
+    imageUrl: iceSwordImg,
+  },
+  {
+    id: 607,
+    name: 'Энергетический щит',
+    slot: 6,
+    slotName: 'Спина',
+    description: 'Защитный энергетический барьер',
+    rarity: 'legendary',
+    stats: { ...emptyStats, defense: -4, maxHp: 10, drunkChance: 2 },
+    accessoryType: 'defense',
+    imageUrl: energyShieldImg,
+  },
+  {
+    id: 608,
+    name: 'Бейсбольная бита Compton',
+    slot: 6,
+    slotName: 'Спина',
+    description: 'Легендарная бита из Комптона',
+    rarity: 'rare',
+    stats: { ...emptyStats, defense: -4, stunChance: 5 },
+    accessoryType: 'defense',
+    imageUrl: comptonBatImg,
+  },
+  {
+    id: 609,
+    name: 'Золотая монтировка',
+    slot: 6,
+    slotName: 'Спина',
+    description: 'Золотая монтировка с высоким шансом оглушения',
+    rarity: 'epic',
+    stats: { ...emptyStats, defense: -4, stunChance: 11 },
+    accessoryType: 'defense',
+    imageUrl: goldenCrowbarImg,
   },
 ];
 
