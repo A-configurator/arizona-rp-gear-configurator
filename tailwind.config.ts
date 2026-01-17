@@ -57,6 +57,18 @@ export default {
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
         },
+        arz: {
+          orange: "hsl(var(--arz-orange))",
+          red: "hsl(var(--arz-red))",
+          gold: "hsl(var(--arz-gold))",
+          green: "hsl(var(--arz-green))",
+          blue: "hsl(var(--arz-blue))",
+          purple: "hsl(var(--arz-purple))",
+        },
+        stat: {
+          positive: "hsl(var(--stat-positive))",
+          neutral: "hsl(var(--stat-neutral))",
+        },
       },
       borderRadius: {
         lg: "var(--radius)",
