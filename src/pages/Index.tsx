@@ -84,6 +84,7 @@ const calculateSlotBonuses = (
       bonuses.maxArmor = 9;
     } else if (level === 14) {
       bonuses.luck = 11;
+      bonuses.maxHp = 4; // сохраняется от +13
       bonuses.maxArmor = 14; // 9 + 5
       bonuses.drunkChance = 2;
       bonuses.reflect = 1;
@@ -100,6 +101,7 @@ const calculateSlotBonuses = (
       bonuses.maxArmor = 9;
     } else if (level === 14) {
       bonuses.defense = 22;
+      bonuses.maxHp = 4; // сохраняется от +13
       bonuses.maxArmor = 14; // 9 + 5
       bonuses.drunkChance = 2;
       bonuses.reflect = 1;
@@ -116,6 +118,8 @@ const calculateSlotBonuses = (
       bonuses.maxArmor = 9;
     } else if (level === 14) {
       bonuses.damage = 11;
+      bonuses.maxHp = 4; // сохраняется от +13
+      bonuses.maxArmor = 9; // у атакующих слотов нет +5
       bonuses.drunkChance = 2;
       bonuses.reflect = 1;
     }
@@ -132,6 +136,7 @@ const calculateSlotBonuses = (
         bonuses.maxArmor = 9;
       } else if (level === 14) {
         bonuses.damage = 12;
+        bonuses.maxHp = 4; // сохраняется от +13
         bonuses.maxArmor = 14;
         bonuses.drunkChance = 2;
         bonuses.reflect = 1;
@@ -145,6 +150,7 @@ const calculateSlotBonuses = (
         bonuses.maxArmor = 9;
       } else if (level === 14) {
         bonuses.defense = 24;
+        bonuses.maxHp = 4; // сохраняется от +13
         bonuses.maxArmor = 14;
         bonuses.drunkChance = 2;
         bonuses.reflect = 1;
