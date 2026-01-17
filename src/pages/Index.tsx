@@ -747,6 +747,12 @@ const Index = () => {
         newEquipped[pendingAccessory.slot - 1] = pendingAccessory;
         return newEquipped;
       });
+      // Очищаем жёлтые характеристики для этого слота
+      setSelectedYellowStats((prev) => {
+        const newYellow = [...prev];
+        newYellow[pendingAccessory.slot - 1] = null;
+        return newYellow;
+      });
     }
     setPendingAccessory(null);
     setShowYellowModal(false);
