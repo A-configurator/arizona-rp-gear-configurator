@@ -131,6 +131,15 @@ import knucklesGloveImg from '@/assets/slot3-hand/knuckles-glove.png';
 import magicAxeImg from '@/assets/slot3-hand/magic-axe.png';
 import frapsSignImg from '@/assets/slot3-hand/fraps-sign.png';
 import azzinothBladesImg from '@/assets/slot3-hand/azzinoth-blades.png';
+import magicBalloonImg from '@/assets/slot3-hand/magic-balloon.png';
+import energyBalloonImg from '@/assets/slot3-hand/energy-balloon.png';
+import kuraBalloonImg from '@/assets/slot3-hand/kura-balloon.png';
+import deloreanImg from '@/assets/slot3-hand/delorean.png';
+import planetExpressImg from '@/assets/slot3-hand/planet-express.png';
+import pirateCompassImg from '@/assets/slot3-hand/pirate-compass.png';
+import flyingDutchmanImg from '@/assets/slot3-hand/flying-dutchman.png';
+import spaceHeartImg from '@/assets/slot3-hand/space-heart.png';
+import mineSkeletonImg from '@/assets/slot3-hand/mine-skeleton.png';
 
 // Импорты жёлтых аксессуаров слота 3 (только с жёлтыми характеристиками)
 import energyWatchImg from '@/assets/slot3-yellow/energy-watch.png';
@@ -143,6 +152,7 @@ import watchRolexImg from '@/assets/slot3-yellow/watch-rolex.png';
 import watchGucciImg from '@/assets/slot3-yellow/watch-gucci.png';
 import watchPatekImg from '@/assets/slot3-yellow/watch-patek.png';
 import watchAppleImg from '@/assets/slot3-yellow/watch-apple.png';
+import arcanaIoImg from '@/assets/slot3-yellow/arcana-io.png';
 
 // Импорты аксессуаров слота 4 (Шея)
 import machinatorChainImg from '@/assets/slot4-neck/machinator-chain.png';
@@ -742,6 +752,108 @@ export const accessories: Accessory[] = [
     stats: { ...emptyStats },
     yellowStats: { ...emptyStats, defense: 1, maxHp: 5 },
     imageUrl: watchAppleImg,
+    isYellowOnly: true,
+  },
+  {
+    id: 611,
+    name: 'Магический воздушный шар #2',
+    slot: 3,
+    slotName: 'Рука',
+    description: 'Волшебный воздушный шар',
+    rarity: 'epic',
+    stats: { ...emptyStats, defense: -2, damage: 1, luck: 10, maxArmor: 25 },
+    imageUrl: magicBalloonImg,
+  },
+  {
+    id: 612,
+    name: 'Энергетический воздушный шар',
+    slot: 3,
+    slotName: 'Рука',
+    description: 'Шар с энергетическим полем',
+    rarity: 'legendary',
+    stats: { ...emptyStats, defense: -4, damage: 4, luck: 24, maxHp: 5, maxArmor: 27, antiStun: 10 },
+    imageUrl: energyBalloonImg,
+  },
+  {
+    id: 613,
+    name: 'Энергетический КУРА шар',
+    slot: 3,
+    slotName: 'Рука',
+    description: 'Шар в виде существа КУРА',
+    rarity: 'legendary',
+    stats: { ...emptyStats, defense: -4, damage: 4, luck: 24, maxHp: 5, maxArmor: 27, antiStun: 10 },
+    imageUrl: kuraBalloonImg,
+  },
+  {
+    id: 614,
+    name: 'Игрушечный Delorean',
+    slot: 3,
+    slotName: 'Рука',
+    description: 'Миниатюрная машина времени DeLorean',
+    rarity: 'epic',
+    stats: { ...emptyStats, luck: 10, maxArmor: 25, stunChance: 4 },
+    imageUrl: deloreanImg,
+  },
+  {
+    id: 615,
+    name: 'Planet Express',
+    slot: 3,
+    slotName: 'Рука',
+    description: 'Корабль Planet Express из Футурамы',
+    rarity: 'epic',
+    stats: { ...emptyStats, luck: 10, maxArmor: 25, stunChance: 4 },
+    imageUrl: planetExpressImg,
+  },
+  {
+    id: 616,
+    name: 'Пиратский компас',
+    slot: 3,
+    slotName: 'Рука',
+    description: 'Компас, указывающий на сокровища',
+    rarity: 'legendary',
+    stats: { ...emptyStats, defense: -4, damage: 4, luck: 24, maxHp: 5, maxArmor: 27, antiStun: 20 },
+    imageUrl: pirateCompassImg,
+  },
+  {
+    id: 617,
+    name: 'Летучий голландец',
+    slot: 3,
+    slotName: 'Рука',
+    description: 'Призрачный корабль Летучий голландец',
+    rarity: 'legendary',
+    stats: { ...emptyStats, defense: -4, damage: 4, luck: 24, maxHp: 5, maxArmor: 27, antiStun: 20 },
+    imageUrl: flyingDutchmanImg,
+  },
+  {
+    id: 618,
+    name: 'Космическое сердце',
+    slot: 3,
+    slotName: 'Рука',
+    description: 'Космическое сердце в форме куба',
+    rarity: 'rare',
+    stats: { ...emptyStats },
+    imageUrl: spaceHeartImg,
+  },
+  {
+    id: 619,
+    name: 'МайнСкелет',
+    slot: 3,
+    slotName: 'Рука',
+    description: 'Легендарный аксессуар МайнСкелет',
+    rarity: 'legendary',
+    stats: { ...emptyStats },
+    imageUrl: mineSkeletonImg,
+  },
+  {
+    id: 620,
+    name: 'Аркана ИО',
+    slot: 3,
+    slotName: 'Рука',
+    description: 'Магическая аркана ИО',
+    rarity: 'legendary',
+    stats: { ...emptyStats },
+    yellowStats: { ...emptyStats, defense: 2, damage: 1, luck: 1, maxHp: 10 },
+    imageUrl: arcanaIoImg,
     isYellowOnly: true,
   },
   // ===== СЛОТ 4 - ШЕЯ =====
