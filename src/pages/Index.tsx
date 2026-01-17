@@ -1,5 +1,6 @@
 import { useState, useCallback, useMemo } from 'react';
 import { Accessory, accessories, calculateTotalStats, SLOT_NAMES, AccessoryStats, AccessoryType, getEmptyStats } from '@/data/accessories';
+import { YellowStatsOption, getYellowStatsForSlot } from '@/data/yellowStats';
 import { X, Minus, Plus, Search } from 'lucide-react';
 
 // Skin images
@@ -433,6 +434,118 @@ const SlotModal = ({ slotNumber, accessories: slotAccessories, equippedId, onSel
   );
 };
 
+// Yellow stats transfer modal
+interface YellowStatsModalProps {
+  slotNumber: number;
+  onSelect: (yellowStats: YellowStatsOption) => void;
+  onSkip: () => void;
+  onClose: () => void;
+}
+
+const YellowStatsModal = ({ slotNumber, onSelect, onSkip, onClose }: YellowStatsModalProps) => {
+  const [searchTerm, setSearchTerm] = useState('');
+  const yellowStatsOptions = getYellowStatsForSlot(slotNumber);
+
+  const filteredOptions = useMemo(() => {
+    if (!searchTerm.trim()) return yellowStatsOptions;
+    return yellowStatsOptions.filter((opt) =>
+      opt.name.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  }, [yellowStatsOptions, searchTerm]);
+
+  const statLabels: Record<string, string> = {
+    defense: 'Защита',
+    damage: 'Урон',
+    luck: 'Удача',
+    regen: 'Регенерация',
+    maxHp: 'Макс. HP',
+    maxArmor: 'Макс. Брони',
+    stunChance: 'Шанс оглуш.',
+    drunkChance: 'Шанс опьянения',
+    antiStun: 'Анти-оглуш.',
+    reflect: 'Отражение',
+    block: 'Блок',
+    fireRate: 'Скорострельность',
+    recoil: 'Отдача',
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/80 backdrop-blur-sm" onClick={onClose}>
+      <div
+        className="w-full max-w-md max-h-[80vh] bg-card border border-border rounded-xl shadow-2xl flex flex-col overflow-hidden"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Header */}
+        <div className="flex items-center justify-between p-4 border-b border-border">
+          <h2 className="text-lg font-bold text-yellow-400">ПЕРЕНОС ЖЁЛТЫХ ХАРАКТЕРИСТИК</h2>
+          <button onClick={onClose} className="w-8 h-8 flex items-center justify-center rounded-full bg-secondary hover:bg-secondary/80 transition-colors">
+            <X className="w-4 h-4" />
+          </button>
+        </div>
+
+        {/* Search */}
+        <div className="p-3 border-b border-border">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+            <input
+              type="text"
+              placeholder="Поиск..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full pl-10 pr-4 py-2 bg-secondary border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-yellow-400/50"
+            />
+          </div>
+        </div>
+        
+        {/* Options list */}
+        <div className="flex-1 overflow-y-auto p-3 arz-scrollbar">
+          <div className="grid grid-cols-2 gap-2">
+            {filteredOptions.map((opt) => {
+              const statsToShow = Object.entries(opt.stats).filter(([_, value]) => value !== 0);
+              return (
+                <div
+                  key={opt.id}
+                  onClick={() => onSelect(opt)}
+                  className="p-2 bg-secondary rounded-lg cursor-pointer flex flex-col items-center gap-1 border-2 border-border hover:border-yellow-400/50 transition-all duration-200"
+                >
+                  <img src={opt.imageUrl} alt={opt.name} className="w-14 h-14 object-contain" />
+                  <div className="text-[10px] font-medium truncate w-full text-center">{opt.name}</div>
+                  {statsToShow.length > 0 && (
+                    <div className="text-[8px] text-center leading-tight space-y-0.5 w-full">
+                      {statsToShow.map(([key, value]) => (
+                        <div key={key}>
+                          <span className="text-yellow-400">{statLabels[key] || key}: </span>
+                          <span className="text-foreground">+{value}</span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+          
+          {filteredOptions.length === 0 && (
+            <div className="text-center text-muted-foreground py-8 text-sm">
+              {searchTerm ? 'Ничего не найдено' : 'Нет доступных характеристик'}
+            </div>
+          )}
+        </div>
+
+        {/* Footer with skip button */}
+        <div className="p-3 border-t border-border">
+          <button
+            onClick={onSkip}
+            className="w-full py-2.5 px-4 bg-secondary text-foreground border border-border rounded-lg text-sm font-medium hover:bg-secondary/80 transition-colors"
+          >
+            Не переносить
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 // Stats display component
 const StatsDisplay = ({ stats }: { stats: AccessoryStats }) => {
   const statItems: { key: keyof AccessoryStats; label: string; format: (v: number) => string }[] = [
@@ -553,21 +666,76 @@ const Index = () => {
   const [selectedSlot, setSelectedSlot] = useState<number | null>(null);
   const [selectedSkin, setSelectedSkin] = useState<Skin | null>(null);
   const [showSkinModal, setShowSkinModal] = useState(false);
-  const [slot6Type, setSlot6Type] = useState<AccessoryType>('attack'); // Тип для 6 слота
+  const [slot6Type, setSlot6Type] = useState<AccessoryType>('attack');
+  const [pendingAccessory, setPendingAccessory] = useState<Accessory | null>(null); // Аксессуар ожидающий выбора жёлтых
+  const [showYellowModal, setShowYellowModal] = useState(false);
 
   const accessoryStats = calculateTotalStats(equippedAccessories);
   const yellowStats = useMemo(() => calculateYellowStats(equippedAccessories), [equippedAccessories]);
   const enhancementBonuses = useMemo(() => calculateEnhancementBonuses(enhancements, equippedAccessories, slot6Type), [enhancements, equippedAccessories, slot6Type]);
   const totalStats = combineTotalStats(BASE_STATS, selectedSkin?.stats || null, accessoryStats, enhancementBonuses, yellowStats);
 
-  const handleEquip = useCallback((accessory: Accessory) => {
-    setEquippedAccessories((prev) => {
-      const newEquipped = [...prev];
-      newEquipped[accessory.slot - 1] = accessory;
-      return newEquipped;
-    });
-    setSelectedSlot(null);
+  // Когда выбирают аксессуар - показываем модалку жёлтых характеристик
+  const handleSelectAccessory = useCallback((accessory: Accessory) => {
+    const yellowOptions = getYellowStatsForSlot(accessory.slot);
+    if (yellowOptions.length > 0) {
+      setPendingAccessory(accessory);
+      setSelectedSlot(null);
+      setShowYellowModal(true);
+    } else {
+      // Нет жёлтых характеристик для этого слота - просто экипируем
+      setEquippedAccessories((prev) => {
+        const newEquipped = [...prev];
+        newEquipped[accessory.slot - 1] = accessory;
+        return newEquipped;
+      });
+      setSelectedSlot(null);
+    }
   }, []);
+
+  // Выбрали жёлтые характеристики
+  const handleSelectYellowStats = useCallback((yellowOption: YellowStatsOption) => {
+    if (pendingAccessory) {
+      const accessoryWithYellow: Accessory = {
+        ...pendingAccessory,
+        yellowStats: {
+          defense: yellowOption.stats.defense || 0,
+          regen: yellowOption.stats.regen || 0,
+          damage: yellowOption.stats.damage || 0,
+          luck: yellowOption.stats.luck || 0,
+          maxHp: yellowOption.stats.maxHp || 0,
+          maxArmor: yellowOption.stats.maxArmor || 0,
+          stunChance: yellowOption.stats.stunChance || 0,
+          drunkChance: yellowOption.stats.drunkChance || 0,
+          antiStun: yellowOption.stats.antiStun || 0,
+          reflect: yellowOption.stats.reflect || 0,
+          block: yellowOption.stats.block || 0,
+          fireRate: yellowOption.stats.fireRate || 0,
+          recoil: yellowOption.stats.recoil || 0,
+        },
+      };
+      setEquippedAccessories((prev) => {
+        const newEquipped = [...prev];
+        newEquipped[pendingAccessory.slot - 1] = accessoryWithYellow;
+        return newEquipped;
+      });
+    }
+    setPendingAccessory(null);
+    setShowYellowModal(false);
+  }, [pendingAccessory]);
+
+  // Пропустить выбор жёлтых
+  const handleSkipYellow = useCallback(() => {
+    if (pendingAccessory) {
+      setEquippedAccessories((prev) => {
+        const newEquipped = [...prev];
+        newEquipped[pendingAccessory.slot - 1] = pendingAccessory;
+        return newEquipped;
+      });
+    }
+    setPendingAccessory(null);
+    setShowYellowModal(false);
+  }, [pendingAccessory]);
 
   const handleUnequip = useCallback((slotIndex: number) => {
     setEquippedAccessories((prev) => {
@@ -649,9 +817,22 @@ const Index = () => {
           slotNumber={selectedSlot}
           accessories={getAccessoriesForSlot(selectedSlot)}
           equippedId={equippedAccessories[selectedSlot - 1]?.id ?? null}
-          onSelect={handleEquip}
+          onSelect={handleSelectAccessory}
           onUnequip={() => handleUnequip(selectedSlot - 1)}
           onClose={() => setSelectedSlot(null)}
+        />
+      )}
+
+      {/* Yellow stats modal */}
+      {showYellowModal && pendingAccessory && (
+        <YellowStatsModal
+          slotNumber={pendingAccessory.slot}
+          onSelect={handleSelectYellowStats}
+          onSkip={handleSkipYellow}
+          onClose={() => {
+            setPendingAccessory(null);
+            setShowYellowModal(false);
+          }}
         />
       )}
 
