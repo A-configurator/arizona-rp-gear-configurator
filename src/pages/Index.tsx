@@ -14,6 +14,23 @@ import spetsnazImg from '@/assets/skins/spetsnaz.png';
 import deadpoolImg from '@/assets/skins/deadpool.png';
 import danjiImg from '@/assets/skins/danji.png';
 
+// Base stats (without any skin)
+const BASE_STATS: AccessoryStats = {
+  defense: 8,
+  regen: 4,
+  damage: 4,
+  luck: 4,
+  maxHp: 12,
+  maxArmor: 12,
+  stunChance: 0,
+  drunkChance: 0,
+  antiStun: 0,
+  reflect: 0,
+  block: 0,
+  fireRate: 0,
+  recoil: 0,
+};
+
 // Skins data
 export interface SkinStats {
   defense?: number;
@@ -41,6 +58,25 @@ const skins: Skin[] = [
   { id: 9, name: 'Дэдпул', image: deadpoolImg, stats: { damage: 2, reflect: 3 } },
   { id: 10, name: 'Данджи', image: danjiImg, stats: { defense: 2, damage: 2, reflect: 3 } },
 ];
+
+// Combine base stats + skin stats + accessory stats
+const combineTotalStats = (baseStats: AccessoryStats, skinStats: SkinStats | null, accessoryStats: AccessoryStats): AccessoryStats => {
+  return {
+    defense: baseStats.defense + (skinStats?.defense || 0) + accessoryStats.defense,
+    regen: baseStats.regen + accessoryStats.regen,
+    damage: baseStats.damage + (skinStats?.damage || 0) + accessoryStats.damage,
+    luck: baseStats.luck + accessoryStats.luck,
+    maxHp: baseStats.maxHp + accessoryStats.maxHp,
+    maxArmor: baseStats.maxArmor + (skinStats?.maxArmor || 0) + accessoryStats.maxArmor,
+    stunChance: baseStats.stunChance + accessoryStats.stunChance,
+    drunkChance: baseStats.drunkChance + accessoryStats.drunkChance,
+    antiStun: baseStats.antiStun + accessoryStats.antiStun,
+    reflect: baseStats.reflect + (skinStats?.reflect || 0) + accessoryStats.reflect,
+    block: baseStats.block + accessoryStats.block,
+    fireRate: baseStats.fireRate + accessoryStats.fireRate,
+    recoil: baseStats.recoil + accessoryStats.recoil,
+  };
+};
 
 // Skin selection modal
 interface SkinModalProps {
@@ -303,10 +339,11 @@ const Index = () => {
   const [equippedAccessories, setEquippedAccessories] = useState<(Accessory | null)[]>(Array(8).fill(null));
   const [enhancements, setEnhancements] = useState<number[]>(Array(8).fill(14));
   const [selectedSlot, setSelectedSlot] = useState<number | null>(null);
-  const [selectedSkin, setSelectedSkin] = useState<Skin | null>(skins[0] || null);
+  const [selectedSkin, setSelectedSkin] = useState<Skin | null>(null);
   const [showSkinModal, setShowSkinModal] = useState(false);
 
-  const totalStats = calculateTotalStats(equippedAccessories);
+  const accessoryStats = calculateTotalStats(equippedAccessories);
+  const totalStats = combineTotalStats(BASE_STATS, selectedSkin?.stats || null, accessoryStats);
 
   const handleEquip = useCallback((accessory: Accessory) => {
     setEquippedAccessories((prev) => {
