@@ -839,6 +839,15 @@ const Index = () => {
   const enhancementBonuses = useMemo(() => calculateEnhancementBonuses(enhancements, equippedAccessories, slot6Type), [enhancements, equippedAccessories, slot6Type]);
   const totalStats = combineTotalStats(BASE_STATS, selectedSkin?.stats || null, accessoryStats, enhancementBonuses, yellowStats);
 
+  // DEBUG: Отладка статов
+  console.log('=== DEBUG STATS ===');
+  console.log('BASE_STATS:', BASE_STATS);
+  console.log('accessoryStats:', accessoryStats);
+  console.log('yellowStats:', yellowStats);
+  console.log('enhancementBonuses:', enhancementBonuses);
+  console.log('totalStats:', totalStats);
+  console.log('equippedAccessories:', equippedAccessories.map(a => a ? { name: a.name, stats: a.stats, baseTransferStats: a.baseTransferStats, yellowStats: a.yellowStats, yellowTransferStats: a.yellowTransferStats } : null));
+
   // Когда выбирают аксессуар - всегда показываем модалку переноса базовых
   const handleSelectAccessory = useCallback((accessory: Accessory) => {
     setPendingAccessory(accessory);
