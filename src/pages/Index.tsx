@@ -316,13 +316,33 @@ const Index = () => {
   const [selectedSlot, setSelectedSlot] = useState<number | null>(null);
   const [selectedSkin, setSelectedSkin] = useState<Skin | null>(skins[0] || null);
   const [showSkinModal, setShowSkinModal] = useState(false);
-  const [skinEnhancement, setSkinEnhancement] = useState(14);
+  const [skinEnhancement, setSkinEnhancement] = useState(12);
 
-  // Комбинированные статы: аксессуары + скин
+  // Базовые статы скина при +12 заточке
+  const SKIN_BASE_STATS_AT_12: Partial<AccessoryStats> = {
+    defense: 10,
+    regen: 4,
+    damage: 6,
+    luck: 4,
+    maxHp: 12,
+    maxArmor: 62,
+  };
+
+  // Комбинированные статы: аксессуары + скин (база от заточки + индивидуальные бонусы)
   const totalStats = useMemo(() => {
     const accessoryStats = calculateTotalStats(equippedAccessories);
     
     if (selectedSkin) {
+      // Добавляем базовые статы от заточки скина (масштабируются от уровня)
+      const enhancementMultiplier = skinEnhancement / 12;
+      (Object.keys(SKIN_BASE_STATS_AT_12) as (keyof AccessoryStats)[]).forEach((key) => {
+        const baseValue = SKIN_BASE_STATS_AT_12[key];
+        if (baseValue !== undefined) {
+          accessoryStats[key] += Math.round(baseValue * enhancementMultiplier);
+        }
+      });
+      
+      // Добавляем индивидуальные бонусы скина
       (Object.keys(selectedSkin.stats) as (keyof AccessoryStats)[]).forEach((key) => {
         const skinValue = selectedSkin.stats[key];
         if (skinValue !== undefined) {
@@ -332,7 +352,7 @@ const Index = () => {
     }
     
     return accessoryStats;
-  }, [equippedAccessories, selectedSkin]);
+  }, [equippedAccessories, selectedSkin, skinEnhancement]);
 
   const handleEquip = useCallback((accessory: Accessory) => {
     setEquippedAccessories((prev) => {
