@@ -31,12 +31,12 @@ export interface Accessory {
 export const SLOT_NAMES: Record<number, string> = {
   1: 'Голова',
   2: 'Лицо',
-  3: 'Шея',
-  4: 'Тело',
-  5: 'Руки',
+  3: 'Рука',
+  4: 'Шея',
+  5: 'Плечо',
   6: 'Спина',
-  7: 'Ноги',
-  8: 'Ступни',
+  7: 'Бронежилет',
+  8: 'Чемодан',
 };
 
 export const STAT_LABELS: Record<keyof AccessoryStats, string> = {
@@ -89,41 +89,41 @@ export const accessories: Accessory[] = [
   { id: 2003, name: 'Маска Демона', slot: 2, slotName: 'Лицо', description: '', rarity: 'epic', stats: { ...emptyStats } },
   { id: 2004, name: 'Легендарная Маска Черепа', slot: 2, slotName: 'Лицо', description: '', rarity: 'legendary', stats: { ...emptyStats } },
 
-  // === ШЕЯ (Слот 3) ===
-  { id: 3001, name: 'Цепочка', slot: 3, slotName: 'Шея', description: '', rarity: 'common', stats: { ...emptyStats } },
-  { id: 3002, name: 'Амулет Защиты', slot: 3, slotName: 'Шея', description: '', rarity: 'rare', stats: { ...emptyStats } },
-  { id: 3003, name: 'Ожерелье Берсерка', slot: 3, slotName: 'Шея', description: '', rarity: 'epic', stats: { ...emptyStats } },
-  { id: 3004, name: 'Легендарный Амулет Дракона', slot: 3, slotName: 'Шея', description: '', rarity: 'legendary', stats: { ...emptyStats } },
+  // === РУКА (Слот 3) ===
+  { id: 3001, name: 'Перчатки Бойца', slot: 3, slotName: 'Рука', description: '', rarity: 'common', stats: { ...emptyStats } },
+  { id: 3002, name: 'Тактические Перчатки', slot: 3, slotName: 'Рука', description: '', rarity: 'rare', stats: { ...emptyStats } },
+  { id: 3003, name: 'Кастеты Разрушителя', slot: 3, slotName: 'Рука', description: '', rarity: 'epic', stats: { ...emptyStats } },
+  { id: 3004, name: 'Легендарные Перчатки Молнии', slot: 3, slotName: 'Рука', description: '', rarity: 'legendary', stats: { ...emptyStats } },
 
-  // === ТЕЛО (Слот 4) ===
-  { id: 4001, name: 'Бронежилет', slot: 4, slotName: 'Тело', description: '', rarity: 'common', stats: { ...emptyStats } },
-  { id: 4002, name: 'Тактический Жилет', slot: 4, slotName: 'Тело', description: '', rarity: 'rare', stats: { ...emptyStats } },
-  { id: 4003, name: 'Костюм Ниндзя', slot: 4, slotName: 'Тело', description: '', rarity: 'epic', stats: { ...emptyStats } },
-  { id: 4004, name: 'Легендарная Броня Титана', slot: 4, slotName: 'Тело', description: '', rarity: 'legendary', stats: { ...emptyStats } },
+  // === ШЕЯ (Слот 4) ===
+  { id: 4001, name: 'Цепочка', slot: 4, slotName: 'Шея', description: '', rarity: 'common', stats: { ...emptyStats } },
+  { id: 4002, name: 'Амулет Защиты', slot: 4, slotName: 'Шея', description: '', rarity: 'rare', stats: { ...emptyStats } },
+  { id: 4003, name: 'Ожерелье Берсерка', slot: 4, slotName: 'Шея', description: '', rarity: 'epic', stats: { ...emptyStats } },
+  { id: 4004, name: 'Легендарный Амулет Дракона', slot: 4, slotName: 'Шея', description: '', rarity: 'legendary', stats: { ...emptyStats } },
 
-  // === РУКИ (Слот 5) ===
-  { id: 5001, name: 'Перчатки Бойца', slot: 5, slotName: 'Руки', description: '', rarity: 'common', stats: { ...emptyStats } },
-  { id: 5002, name: 'Тактические Перчатки', slot: 5, slotName: 'Руки', description: '', rarity: 'rare', stats: { ...emptyStats } },
-  { id: 5003, name: 'Кастеты Разрушителя', slot: 5, slotName: 'Руки', description: '', rarity: 'epic', stats: { ...emptyStats } },
-  { id: 5004, name: 'Легендарные Перчатки Молнии', slot: 5, slotName: 'Руки', description: '', rarity: 'legendary', stats: { ...emptyStats } },
+  // === ПЛЕЧО (Слот 5) ===
+  { id: 5001, name: 'Наплечник Воина', slot: 5, slotName: 'Плечо', description: '', rarity: 'common', stats: { ...emptyStats } },
+  { id: 5002, name: 'Тактические Наплечники', slot: 5, slotName: 'Плечо', description: '', rarity: 'rare', stats: { ...emptyStats } },
+  { id: 5003, name: 'Шипованные Наплечники', slot: 5, slotName: 'Плечо', description: '', rarity: 'epic', stats: { ...emptyStats } },
+  { id: 5004, name: 'Легендарные Наплечники Титана', slot: 5, slotName: 'Плечо', description: '', rarity: 'legendary', stats: { ...emptyStats } },
 
   // === СПИНА (Слот 6) ===
-  { id: 5501, name: 'Рюкзак Путника', slot: 6, slotName: 'Спина', description: '', rarity: 'common', stats: { ...emptyStats } },
-  { id: 5502, name: 'Тактический Рюкзак', slot: 6, slotName: 'Спина', description: '', rarity: 'rare', stats: { ...emptyStats } },
-  { id: 5503, name: 'Крылья Ангела', slot: 6, slotName: 'Спина', description: '', rarity: 'epic', stats: { ...emptyStats } },
-  { id: 5504, name: 'Лавка Чубрика', slot: 6, slotName: 'Спина', description: '', rarity: 'legendary', stats: { ...emptyStats } },
+  { id: 6001, name: 'Рюкзак Путника', slot: 6, slotName: 'Спина', description: '', rarity: 'common', stats: { ...emptyStats } },
+  { id: 6002, name: 'Тактический Рюкзак', slot: 6, slotName: 'Спина', description: '', rarity: 'rare', stats: { ...emptyStats } },
+  { id: 6003, name: 'Крылья Ангела', slot: 6, slotName: 'Спина', description: '', rarity: 'epic', stats: { ...emptyStats } },
+  { id: 6004, name: 'Лавка Чубрика', slot: 6, slotName: 'Спина', description: '', rarity: 'legendary', stats: { ...emptyStats } },
 
-  // === НОГИ (Слот 7) ===
-  { id: 6001, name: 'Наколенники', slot: 7, slotName: 'Ноги', description: '', rarity: 'common', stats: { ...emptyStats } },
-  { id: 6002, name: 'Тактические Штаны', slot: 7, slotName: 'Ноги', description: '', rarity: 'rare', stats: { ...emptyStats } },
-  { id: 6003, name: 'Штаны Спринтера', slot: 7, slotName: 'Ноги', description: '', rarity: 'epic', stats: { ...emptyStats } },
-  { id: 6004, name: 'Легендарные Поножи Воина', slot: 7, slotName: 'Ноги', description: '', rarity: 'legendary', stats: { ...emptyStats } },
+  // === БРОНЕЖИЛЕТ (Слот 7) ===
+  { id: 7001, name: 'Лёгкий Бронежилет', slot: 7, slotName: 'Бронежилет', description: '', rarity: 'common', stats: { ...emptyStats } },
+  { id: 7002, name: 'Тактический Жилет', slot: 7, slotName: 'Бронежилет', description: '', rarity: 'rare', stats: { ...emptyStats } },
+  { id: 7003, name: 'Штурмовая Броня', slot: 7, slotName: 'Бронежилет', description: '', rarity: 'epic', stats: { ...emptyStats } },
+  { id: 7004, name: 'Легендарная Броня Титана', slot: 7, slotName: 'Бронежилет', description: '', rarity: 'legendary', stats: { ...emptyStats } },
 
-  // === СТУПНИ (Слот 8) ===
-  { id: 7001, name: 'Ботинки Пехотинца', slot: 8, slotName: 'Ступни', description: '', rarity: 'common', stats: { ...emptyStats } },
-  { id: 7002, name: 'Тактические Берцы', slot: 8, slotName: 'Ступни', description: '', rarity: 'rare', stats: { ...emptyStats } },
-  { id: 7003, name: 'Кроссовки Скорости', slot: 8, slotName: 'Ступни', description: '', rarity: 'epic', stats: { ...emptyStats } },
-  { id: 7004, name: 'Легендарные Сапоги Титана', slot: 8, slotName: 'Ступни', description: '', rarity: 'legendary', stats: { ...emptyStats } },
+  // === ЧЕМОДАН (Слот 8) ===
+  { id: 8001, name: 'Простой Чемодан', slot: 8, slotName: 'Чемодан', description: '', rarity: 'common', stats: { ...emptyStats } },
+  { id: 8002, name: 'Дорожный Чемодан', slot: 8, slotName: 'Чемодан', description: '', rarity: 'rare', stats: { ...emptyStats } },
+  { id: 8003, name: 'Элитный Кейс', slot: 8, slotName: 'Чемодан', description: '', rarity: 'epic', stats: { ...emptyStats } },
+  { id: 8004, name: 'Легендарный Кейс', slot: 8, slotName: 'Чемодан', description: '', rarity: 'legendary', stats: { ...emptyStats } },
 ];
 
 export const getEmptyStats = (): AccessoryStats => ({

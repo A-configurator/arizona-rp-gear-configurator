@@ -1,114 +1,217 @@
 import { useState, useCallback } from 'react';
-import { Accessory, calculateTotalStats, getEmptyStats } from '@/data/accessories';
-import { CharacterDisplay } from '@/components/CharacterDisplay';
-import { StatsPanel } from '@/components/StatsPanel';
-import { AccessoryGrid } from '@/components/AccessoryGrid';
-import { AccessoryModal } from '@/components/AccessoryModal';
+import { Accessory, accessories, calculateTotalStats, SLOT_NAMES, STAT_LABELS, STAT_SUFFIXES, AccessoryStats } from '@/data/accessories';
+import { X, Minus, Plus } from 'lucide-react';
+
+// Slot selection modal
+interface SlotModalProps {
+  slotNumber: number;
+  accessories: Accessory[];
+  equippedId: number | null;
+  onSelect: (accessory: Accessory) => void;
+  onClose: () => void;
+}
+
+const SlotModal = ({ slotNumber, accessories: slotAccessories, equippedId, onSelect, onClose }: SlotModalProps) => {
+  return (
+    <div className="fixed inset-0 z-50 bg-background/95 flex flex-col" onClick={onClose}>
+      <div className="flex items-center justify-between p-4 border-b border-border">
+        <h2 className="text-lg font-bold arz-text-gradient">{SLOT_NAMES[slotNumber]}</h2>
+        <button onClick={onClose} className="w-8 h-8 flex items-center justify-center rounded-full bg-secondary">
+          <X className="w-5 h-5" />
+        </button>
+      </div>
+      
+      <div className="flex-1 overflow-y-auto p-4" onClick={(e) => e.stopPropagation()}>
+        <div className="grid grid-cols-3 gap-3">
+          {slotAccessories.map((acc) => (
+            <div
+              key={acc.id}
+              onClick={() => onSelect(acc)}
+              className={`
+                aspect-square bg-secondary rounded-lg flex items-center justify-center cursor-pointer
+                border-2 transition-all duration-200
+                ${equippedId === acc.id ? 'border-primary arz-glow' : 'border-border hover:border-primary/50'}
+              `}
+            >
+              <div className="text-center p-2">
+                <div className="text-xs font-medium truncate">{acc.name}</div>
+              </div>
+            </div>
+          ))}
+        </div>
+        
+        {slotAccessories.length === 0 && (
+          <div className="text-center text-muted-foreground py-8">
+            Нет аксессуаров для этого слота
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+// Stats display component
+const StatsDisplay = ({ stats }: { stats: AccessoryStats }) => {
+  const statItems: { key: keyof AccessoryStats; label: string; format: (v: number) => string }[] = [
+    { key: 'defense', label: 'Защита:', format: (v) => `[-${v}% урона]` },
+    { key: 'regen', label: 'Регенерация:', format: (v) => `[${v} HP в мин.]` },
+    { key: 'damage', label: 'Урон:', format: (v) => `[+${v} урона]` },
+    { key: 'luck', label: 'Удача:', format: (v) => `[шанс ${v}% крит.урона]` },
+    { key: 'maxHp', label: 'Макс. HP:', format: (v) => `[+${v} макс. HP]` },
+    { key: 'maxArmor', label: 'Макс. Брони:', format: (v) => `[+${v} макс. Брони]` },
+    { key: 'stunChance', label: 'Шанс оглушения:', format: (v) => `[+${v}%]` },
+    { key: 'drunkChance', label: 'Шанс опьянения:', format: (v) => `[+${v}%]` },
+    { key: 'antiStun', label: 'Шанс избежать оглушения:', format: (v) => `[+${v}%]` },
+    { key: 'reflect', label: 'Отражение урона:', format: (v) => `[-${v}%]` },
+    { key: 'block', label: 'Блокировка урона:', format: (v) => `[${v} раз]` },
+    { key: 'fireRate', label: 'Скорострельность:', format: (v) => `[+${v}% скорострельности]` },
+    { key: 'recoil', label: 'Отдача:', format: (v) => `[${v}% отдачи]` },
+  ];
+
+  return (
+    <div className="space-y-1 text-sm">
+      {statItems.map(({ key, label, format }) => (
+        <div key={key} className="flex flex-wrap gap-1">
+          <span className="font-medium">{label}</span>
+          <span className={stats[key] !== 0 ? 'stat-positive' : 'stat-neutral'}>
+            {format(stats[key])}
+          </span>
+        </div>
+      ))}
+    </div>
+  );
+};
+
+// Equipment slot component
+interface EquipmentSlotProps {
+  slotNumber: number;
+  equipped: Accessory | null;
+  enhancement: number;
+  onSlotClick: () => void;
+  onEnhance: (delta: number) => void;
+}
+
+const EquipmentSlot = ({ slotNumber, equipped, enhancement, onSlotClick, onEnhance }: EquipmentSlotProps) => {
+  return (
+    <div className="flex flex-col">
+      <div
+        onClick={onSlotClick}
+        className={`
+          aspect-square bg-secondary rounded-lg flex items-center justify-center cursor-pointer
+          border-2 transition-all duration-200 mb-1
+          ${equipped ? 'border-primary/50' : 'border-border hover:border-primary/30'}
+        `}
+      >
+        {equipped ? (
+          <div className="text-center p-1">
+            <div className="text-[10px] font-medium truncate px-1">{equipped.name}</div>
+          </div>
+        ) : (
+          <div className="text-xs text-muted-foreground">{SLOT_NAMES[slotNumber]}</div>
+        )}
+      </div>
+      
+      {/* Enhancement controls */}
+      <div className="flex items-center justify-center gap-1">
+        <span className="text-xs font-bold text-muted-foreground">N</span>
+        <span className="text-xs font-medium text-primary">+{enhancement}</span>
+        <button
+          onClick={(e) => { e.stopPropagation(); onEnhance(-1); }}
+          className="w-5 h-5 bg-secondary rounded flex items-center justify-center hover:bg-secondary/80"
+        >
+          <Minus className="w-3 h-3" />
+        </button>
+        <button
+          onClick={(e) => { e.stopPropagation(); onEnhance(1); }}
+          className="w-5 h-5 bg-secondary rounded flex items-center justify-center hover:bg-secondary/80"
+        >
+          <Plus className="w-3 h-3" />
+        </button>
+      </div>
+    </div>
+  );
+};
 
 const Index = () => {
-  // 8 slots: index 0-7 correspond to slots 1-8
-  const [equippedAccessories, setEquippedAccessories] = useState<(Accessory | null)[]>(
-    Array(8).fill(null)
-  );
-  const [selectedAccessory, setSelectedAccessory] = useState<Accessory | null>(null);
-  const [filterSlot, setFilterSlot] = useState<number | null>(null);
+  const [equippedAccessories, setEquippedAccessories] = useState<(Accessory | null)[]>(Array(8).fill(null));
+  const [enhancements, setEnhancements] = useState<number[]>(Array(8).fill(14));
+  const [selectedSlot, setSelectedSlot] = useState<number | null>(null);
 
   const totalStats = calculateTotalStats(equippedAccessories);
 
   const handleEquip = useCallback((accessory: Accessory) => {
     setEquippedAccessories((prev) => {
       const newEquipped = [...prev];
-      const slotIndex = accessory.slot - 1;
-      newEquipped[slotIndex] = accessory;
+      newEquipped[accessory.slot - 1] = accessory;
       return newEquipped;
     });
-    setSelectedAccessory(null);
+    setSelectedSlot(null);
   }, []);
 
-  const handleUnequip = useCallback((slotIndex: number) => {
-    setEquippedAccessories((prev) => {
-      const newEquipped = [...prev];
-      newEquipped[slotIndex] = null;
-      return newEquipped;
+  const handleEnhance = useCallback((slotIndex: number, delta: number) => {
+    setEnhancements((prev) => {
+      const newEnhancements = [...prev];
+      newEnhancements[slotIndex] = Math.max(0, Math.min(16, newEnhancements[slotIndex] + delta));
+      return newEnhancements;
     });
-    setSelectedAccessory(null);
   }, []);
 
-  const handleSlotClick = useCallback((slotIndex: number) => {
-    const equipped = equippedAccessories[slotIndex];
-    if (equipped) {
-      setSelectedAccessory(equipped);
-    } else {
-      // Filter grid by this slot
-      setFilterSlot(slotIndex + 1);
-    }
-  }, [equippedAccessories]);
-
-  const handleAccessoryClick = useCallback((accessory: Accessory) => {
-    setSelectedAccessory(accessory);
-  }, []);
-
-  const isAccessoryEquipped = selectedAccessory
-    ? equippedAccessories.some((eq) => eq?.id === selectedAccessory.id)
-    : false;
+  const getAccessoriesForSlot = (slotNumber: number) => {
+    return accessories.filter((acc) => acc.slot === slotNumber);
+  };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background text-foreground p-4">
       {/* Header */}
-      <header className="border-b border-border bg-card/50 backdrop-blur-sm sticky top-0 z-40">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <h1 className="text-xl md:text-2xl font-bold arz-text-gradient tracking-wider">
-              ARIZONA RP
-            </h1>
-            <span className="text-sm text-muted-foreground">Конфигуратор аксессуаров</span>
-          </div>
-        </div>
-      </header>
+      <div className="text-center text-xs text-muted-foreground mb-4">
+        © Arizona RP Configurator, 2025
+      </div>
 
-      {/* Main Content */}
-      <main className="container mx-auto px-4 py-6">
-        {/* Desktop Layout */}
-        <div className="hidden lg:grid lg:grid-cols-[280px_1fr_1fr] gap-6 h-[calc(100vh-120px)]">
-          <CharacterDisplay
-            equippedAccessories={equippedAccessories}
-            onSlotClick={handleSlotClick}
-            onUnequip={handleUnequip}
-          />
-          <StatsPanel stats={totalStats} />
-          <AccessoryGrid
-            equippedAccessories={equippedAccessories}
-            onAccessoryClick={handleAccessoryClick}
-            filterSlot={filterSlot}
-          />
+      {/* Tabs */}
+      <div className="flex gap-4 mb-4">
+        <span className="text-accent font-bold">
+          <span className="text-2xl">А</span>ксики
+        </span>
+        <span className="text-muted-foreground font-bold">
+          <span className="text-2xl">С</span>етики
+        </span>
+      </div>
+
+      {/* Main content: Character + Stats */}
+      <div className="flex gap-4 mb-6">
+        {/* Character image */}
+        <div className="w-32 h-48 bg-secondary/30 rounded-lg flex items-center justify-center flex-shrink-0">
+          <div className="text-4xl">🧑</div>
         </div>
 
-        {/* Mobile/Tablet Layout */}
-        <div className="lg:hidden space-y-6">
-          <CharacterDisplay
-            equippedAccessories={equippedAccessories}
-            onSlotClick={handleSlotClick}
-            onUnequip={handleUnequip}
-          />
-          <StatsPanel stats={totalStats} />
-          <div className="min-h-[400px]">
-            <AccessoryGrid
-              equippedAccessories={equippedAccessories}
-              onAccessoryClick={handleAccessoryClick}
-              filterSlot={filterSlot}
-            />
-          </div>
+        {/* Stats */}
+        <div className="flex-1">
+          <StatsDisplay stats={totalStats} />
         </div>
-      </main>
+      </div>
 
-      {/* Modal */}
-      {selectedAccessory && (
-        <AccessoryModal
-          accessory={selectedAccessory}
-          isEquipped={isAccessoryEquipped}
-          onClose={() => setSelectedAccessory(null)}
-          onEquip={() => handleEquip(selectedAccessory)}
-          onUnequip={() => handleUnequip(selectedAccessory.slot - 1)}
+      {/* Equipment slots grid */}
+      <div className="grid grid-cols-3 gap-3 max-w-sm mx-auto">
+        {[1, 2, 3, 4, 5, 6, 7, 8].map((slotNum) => (
+          <EquipmentSlot
+            key={slotNum}
+            slotNumber={slotNum}
+            equipped={equippedAccessories[slotNum - 1]}
+            enhancement={enhancements[slotNum - 1]}
+            onSlotClick={() => setSelectedSlot(slotNum)}
+            onEnhance={(delta) => handleEnhance(slotNum - 1, delta)}
+          />
+        ))}
+      </div>
+
+      {/* Slot selection modal */}
+      {selectedSlot !== null && (
+        <SlotModal
+          slotNumber={selectedSlot}
+          accessories={getAccessoriesForSlot(selectedSlot)}
+          equippedId={equippedAccessories[selectedSlot - 1]?.id ?? null}
+          onSelect={handleEquip}
+          onClose={() => setSelectedSlot(null)}
         />
       )}
     </div>
