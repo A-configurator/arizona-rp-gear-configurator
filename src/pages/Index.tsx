@@ -14,97 +14,38 @@ import spetsnazImg from '@/assets/skins/spetsnaz.png';
 import deadpoolImg from '@/assets/skins/deadpool.png';
 import danjiImg from '@/assets/skins/danji.png';
 
-// Skins data - использует AccessoryStats для совместимости
+// Skins data
+export interface SkinStats {
+  defense?: number;
+  damage?: number;
+  reflect?: number;
+  maxArmor?: number;
+}
+
 export interface Skin {
   id: number;
   name: string;
   image: string;
-  stats: Partial<AccessoryStats>;
+  stats: SkinStats;
 }
 
-// Базовые статы скина при +12 (без встроенных бонусов)
-const BASE_SKIN_STATS: Partial<AccessoryStats> = {
-  defense: 8,
-  regen: 4,
-  damage: 4,
-  luck: 4,
-  maxHp: 12,
-  maxArmor: 12,
-};
-
-// Встроенные бонусы (добавляются к базовым)
-const BUILTIN_BONUS: Partial<AccessoryStats> = {
-  defense: 2,  // 8 + 2 = 10
-  damage: 2,   // 4 + 2 = 6
-  maxArmor: 50, // 12 + 50 = 62
-};
-
-// Скины: hasBuiltin = true означает что скин имеет встроенные бонусы
-interface SkinWithBuiltin extends Skin {
-  hasBuiltin: boolean;
-}
-
-const skins: SkinWithBuiltin[] = [
-  { id: 1, name: 'Космический Фермер', image: spaceFarmerImg, stats: {}, hasBuiltin: true },
-  { id: 2, name: 'Суидни Суини', image: suidniSweeneyImg, stats: {}, hasBuiltin: true },
-  { id: 3, name: 'Человек-муравей', image: antManImg, stats: {}, hasBuiltin: true },
-  { id: 4, name: 'Мэгу', image: meguImg, stats: {}, hasBuiltin: true },
-  { id: 5, name: 'Кровавый Ангел', image: bloodAngelImg, stats: {}, hasBuiltin: true },
-  { id: 6, name: 'Космодесантник', image: spaceMarineImg, stats: {}, hasBuiltin: true },
-  { id: 7, name: 'Альтушка', image: altGirlImg, stats: { maxArmor: 100 }, hasBuiltin: false },
-  { id: 8, name: 'Спецназовец', image: spetsnazImg, stats: {}, hasBuiltin: true },
-  { id: 9, name: 'Дэдпул', image: deadpoolImg, stats: {}, hasBuiltin: true },
-  { id: 10, name: 'Данджи', image: danjiImg, stats: {}, hasBuiltin: true },
+const skins: Skin[] = [
+  { id: 1, name: 'Космический Фермер', image: spaceFarmerImg, stats: { defense: 2, damage: 2, reflect: 3, maxArmor: 50 } },
+  { id: 2, name: 'Суидни Суини', image: suidniSweeneyImg, stats: { defense: 2, damage: 2, reflect: 3 } },
+  { id: 3, name: 'Человек-муравей', image: antManImg, stats: { defense: 2, damage: 2, reflect: 3 } },
+  { id: 4, name: 'Мэгу', image: meguImg, stats: { defense: 2, damage: 2, reflect: 3 } },
+  { id: 5, name: 'Кровавый Ангел', image: bloodAngelImg, stats: { defense: 2, damage: 2, reflect: 3 } },
+  { id: 6, name: 'Космодесантник', image: spaceMarineImg, stats: { defense: 2, damage: 2, reflect: 3 } },
+  { id: 7, name: 'Альтушка', image: altGirlImg, stats: { maxArmor: 100 } },
+  { id: 8, name: 'Спецназовец', image: spetsnazImg, stats: { defense: 2, damage: 2, reflect: 3 } },
+  { id: 9, name: 'Дэдпул', image: deadpoolImg, stats: { damage: 2, reflect: 3 } },
+  { id: 10, name: 'Данджи', image: danjiImg, stats: { defense: 2, damage: 2, reflect: 3 } },
 ];
-
-// Функция для расчета полных статов скина
-const getSkinFullStats = (skin: SkinWithBuiltin): Partial<AccessoryStats> => {
-  const result: Partial<AccessoryStats> = {};
-  
-  if (skin.hasBuiltin) {
-    // Скин со встроенными бонусами: база + встроенные
-    (Object.keys(BASE_SKIN_STATS) as (keyof AccessoryStats)[]).forEach((key) => {
-      const base = BASE_SKIN_STATS[key] || 0;
-      const bonus = BUILTIN_BONUS[key] || 0;
-      result[key] = base + bonus;
-    });
-  } else {
-    // Скин без встроенных бонусов: только индивидуальные статы
-    return skin.stats;
-  }
-  
-  // Добавляем индивидуальные статы скина
-  (Object.keys(skin.stats) as (keyof AccessoryStats)[]).forEach((key) => {
-    const skinValue = skin.stats[key];
-    if (skinValue !== undefined) {
-      result[key] = skinValue;
-    }
-  });
-  
-  return result;
-};
-
-// Названия статов для отображения в модалке скинов
-const SKIN_STAT_LABELS: Record<keyof AccessoryStats, string> = {
-  defense: 'Защита',
-  regen: 'Регенерация',
-  damage: 'Урон',
-  luck: 'Удача',
-  maxHp: 'Макс. HP',
-  maxArmor: 'Макс. Брони',
-  stunChance: 'Шанс оглушения',
-  drunkChance: 'Шанс опьянения',
-  antiStun: 'Анти-оглушение',
-  reflect: 'Отражение урона',
-  block: 'Блокировка урона',
-  fireRate: 'Скорострельность',
-  recoil: 'Отдача',
-};
 
 // Skin selection modal
 interface SkinModalProps {
   selectedSkinId: number;
-  onSelect: (skin: SkinWithBuiltin) => void;
+  onSelect: (skin: Skin) => void;
   onClose: () => void;
 }
 
@@ -162,14 +103,10 @@ const SkinModal = ({ selectedSkinId, onSelect, onClose }: SkinModalProps) => {
                 <img src={skin.image} alt={skin.name} className="w-16 h-20 object-cover object-top rounded" />
                 <div className="text-[10px] font-medium truncate w-full text-center">{skin.name}</div>
                 <div className="text-[8px] text-red-500 text-center leading-tight space-y-0.5">
-                  {(() => {
-                    const fullStats = getSkinFullStats(skin);
-                    return (Object.keys(fullStats) as (keyof AccessoryStats)[]).map((key) => (
-                      fullStats[key] !== undefined && fullStats[key] !== 0 && (
-                        <div key={key}>{SKIN_STAT_LABELS[key]}: {fullStats[key]}</div>
-                      )
-                    ));
-                  })()}
+                  {skin.stats.defense !== undefined && <div>Защита: {skin.stats.defense}</div>}
+                  {skin.stats.damage !== undefined && <div>Урон: {skin.stats.damage}</div>}
+                  {skin.stats.reflect !== undefined && <div>Отражение урона: {skin.stats.reflect}</div>}
+                  {skin.stats.maxArmor !== undefined && <div>Макс. Брони: {skin.stats.maxArmor}</div>}
                 </div>
               </div>
             ))}
@@ -366,25 +303,10 @@ const Index = () => {
   const [equippedAccessories, setEquippedAccessories] = useState<(Accessory | null)[]>(Array(8).fill(null));
   const [enhancements, setEnhancements] = useState<number[]>(Array(8).fill(14));
   const [selectedSlot, setSelectedSlot] = useState<number | null>(null);
-  const [selectedSkin, setSelectedSkin] = useState<SkinWithBuiltin | null>(skins[0] || null);
+  const [selectedSkin, setSelectedSkin] = useState<Skin | null>(skins[0] || null);
   const [showSkinModal, setShowSkinModal] = useState(false);
 
-  // Комбинированные статы: аксессуары + полные статы скина (база + встроенные)
-  const totalStats = useMemo(() => {
-    const accessoryStats = calculateTotalStats(equippedAccessories);
-    
-    if (selectedSkin) {
-      const skinFullStats = getSkinFullStats(selectedSkin);
-      (Object.keys(skinFullStats) as (keyof AccessoryStats)[]).forEach((key) => {
-        const skinValue = skinFullStats[key];
-        if (skinValue !== undefined) {
-          accessoryStats[key] += skinValue;
-        }
-      });
-    }
-    
-    return accessoryStats;
-  }, [equippedAccessories, selectedSkin]);
+  const totalStats = calculateTotalStats(equippedAccessories);
 
   const handleEquip = useCallback((accessory: Accessory) => {
     setEquippedAccessories((prev) => {
@@ -433,23 +355,15 @@ const Index = () => {
       {/* Main content: Character + Stats */}
       <div className="flex gap-4 mb-6">
         {/* Character image - clickable for skin selection */}
-        <div className="flex flex-col items-center flex-shrink-0">
-          <div
-            onClick={() => setShowSkinModal(true)}
-            className="w-32 h-48 bg-secondary/30 rounded-lg flex items-center justify-center cursor-pointer hover:bg-secondary/50 transition-colors border-2 border-transparent hover:border-primary/30 overflow-hidden"
-          >
-            {selectedSkin ? (
-              <img src={selectedSkin.image} alt={selectedSkin.name} className="w-full h-full object-cover object-top" />
-            ) : (
-              <div className="text-4xl">🧑</div>
-            )}
-          </div>
-          
-          {/* Skin enhancement - fixed */}
-          <div className="flex items-center justify-center gap-1 mt-2">
-            <span className="text-xs font-bold text-muted-foreground">N</span>
-            <span className="text-xs font-medium text-primary">+12</span>
-          </div>
+        <div
+          onClick={() => setShowSkinModal(true)}
+          className="w-32 h-48 bg-secondary/30 rounded-lg flex items-center justify-center flex-shrink-0 cursor-pointer hover:bg-secondary/50 transition-colors border-2 border-transparent hover:border-primary/30 overflow-hidden"
+        >
+          {selectedSkin ? (
+            <img src={selectedSkin.image} alt={selectedSkin.name} className="w-full h-full object-cover object-top" />
+          ) : (
+            <div className="text-4xl">🧑</div>
+          )}
         </div>
 
         {/* Stats */}
