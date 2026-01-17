@@ -92,6 +92,12 @@ import pumpkinHeadImg from '@/assets/accessories/pumpkin-head.png';
 import jetpackImg from '@/assets/accessories/jetpack.png';
 import spaceJetpackImg from '@/assets/accessories/space-jetpack.png';
 
+// Импорты аксессуаров слота 2 (Лицо)
+import netrunnerGlassesImg from '@/assets/slot2-face/netrunner-glasses.png';
+import cyberpunkVrGlassesImg from '@/assets/slot2-face/cyberpunk-vr-glasses.png';
+import invisibilityMaskImg from '@/assets/slot2-face/invisibility-mask.png';
+import headSphereImg from '@/assets/slot2-face/head-sphere.png';
+
 // Импорты жёлтых аксессуаров (только с жёлтыми характеристиками)
 import nimbRingYellowImg from '@/assets/slot1-yellow/nimb-ring.png';
 import tangoYellowImg from '@/assets/slot1-yellow/tango.png';
@@ -327,6 +333,47 @@ export const accessories: Accessory[] = [
     yellowStats: { ...emptyStats, defense: 1, damage: 1, luck: 1, stunChance: 1 },
     imageUrl: pirateHatYellowImg,
     isYellowOnly: true,
+  },
+  // ===== СЛОТ 2 - ЛИЦО =====
+  {
+    id: 301,
+    name: 'Анимированные очки Netrunner',
+    slot: 2,
+    slotName: 'Лицо',
+    description: 'Киберпанковские анимированные очки',
+    rarity: 'epic',
+    stats: { ...emptyStats, defense: 2, luck: 25 },
+    imageUrl: netrunnerGlassesImg,
+  },
+  {
+    id: 302,
+    name: 'Киберпанковские VR-очки',
+    slot: 2,
+    slotName: 'Лицо',
+    description: 'Футуристические VR очки',
+    rarity: 'epic',
+    stats: { ...emptyStats, defense: 2, luck: 25 },
+    imageUrl: cyberpunkVrGlassesImg,
+  },
+  {
+    id: 303,
+    name: 'Маска-невидимка',
+    slot: 2,
+    slotName: 'Лицо',
+    description: 'Маска с эффектом невидимости',
+    rarity: 'legendary',
+    stats: { ...emptyStats, stunChance: 3 },
+    imageUrl: invisibilityMaskImg,
+  },
+  {
+    id: 304,
+    name: 'Сфера над головой',
+    slot: 2,
+    slotName: 'Лицо',
+    description: 'Парящая сфера над головой',
+    rarity: 'legendary',
+    stats: { ...emptyStats, defense: 2, damage: 2, luck: 2 },
+    imageUrl: headSphereImg,
   },
 ];
 
