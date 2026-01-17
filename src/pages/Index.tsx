@@ -367,22 +367,53 @@ const SlotModal = ({ slotNumber, accessories: slotAccessories, equippedId, onSel
         {/* Accessories list */}
         <div className="flex-1 overflow-y-auto p-3 arz-scrollbar">
           <div className="grid grid-cols-2 gap-2">
-            {filteredAccessories.map((acc) => (
-              <div
-                key={acc.id}
-                onClick={() => onSelect(acc)}
-                className={`
-                  p-2 bg-secondary rounded-lg cursor-pointer flex flex-col items-center gap-1
-                  border-2 transition-all duration-200
-                  ${equippedId === acc.id ? 'border-primary arz-glow' : 'border-border hover:border-primary/50'}
-                `}
-              >
-                {acc.imageUrl && (
-                  <img src={acc.imageUrl} alt={acc.name} className="w-14 h-14 object-contain" />
-                )}
-                <div className="text-[10px] font-medium truncate w-full text-center">{acc.name}</div>
-              </div>
-            ))}
+            {filteredAccessories.map((acc) => {
+              const statsToShow = Object.entries(acc.stats).filter(([_, value]) => value !== 0);
+              return (
+                <div
+                  key={acc.id}
+                  onClick={() => onSelect(acc)}
+                  className={`
+                    p-2 bg-secondary rounded-lg cursor-pointer flex flex-col items-center gap-1
+                    border-2 transition-all duration-200
+                    ${equippedId === acc.id ? 'border-primary arz-glow' : 'border-border hover:border-primary/50'}
+                  `}
+                >
+                  {acc.imageUrl && (
+                    <img src={acc.imageUrl} alt={acc.name} className="w-14 h-14 object-contain" />
+                  )}
+                  <div className="text-[10px] font-medium truncate w-full text-center">{acc.name}</div>
+                  {statsToShow.length > 0 && (
+                    <div className="text-[8px] text-center leading-tight space-y-0.5 w-full">
+                      {statsToShow.map(([key, value]) => {
+                        const statKey = key as keyof AccessoryStats;
+                        const labels: Record<string, string> = {
+                          defense: 'Защита',
+                          damage: 'Урон',
+                          luck: 'Удача',
+                          regen: 'Регенерация',
+                          maxHp: 'Макс. HP',
+                          maxArmor: 'Макс. Брони',
+                          stunChance: 'Шанс оглуш.',
+                          drunkChance: 'Шанс опьянения',
+                          antiStun: 'Анти-оглуш.',
+                          reflect: 'Отражение',
+                          block: 'Блок',
+                          fireRate: 'Скорострельность',
+                          recoil: 'Отдача',
+                        };
+                        return (
+                          <div key={key}>
+                            <span className="text-destructive">{labels[statKey] || key}: </span>
+                            <span className="text-foreground">{value > 0 ? `+${value}` : value}</span>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
           </div>
           
           {filteredAccessories.length === 0 && (
