@@ -98,7 +98,7 @@ import cyberpunkVrGlassesImg from '@/assets/slot2-face/cyberpunk-vr-glasses.png'
 import invisibilityMaskImg from '@/assets/slot2-face/invisibility-mask.png';
 import headSphereImg from '@/assets/slot2-face/head-sphere.png';
 
-// Импорты жёлтых аксессуаров (только с жёлтыми характеристиками)
+// Импорты жёлтых аксессуаров слота 1 (только с жёлтыми характеристиками)
 import nimbRingYellowImg from '@/assets/slot1-yellow/nimb-ring.png';
 import tangoYellowImg from '@/assets/slot1-yellow/tango.png';
 import nimbDoraYellowImg from '@/assets/slot1-yellow/nimb-dora.png';
@@ -109,6 +109,18 @@ import exclusiveHat2YellowImg from '@/assets/slot1-yellow/exclusive-hat-2.png';
 import exclusiveHat1YellowImg from '@/assets/slot1-yellow/exclusive-hat-1.png';
 import tacticalHelmetYellowImg from '@/assets/slot1-yellow/tactical-helmet.png';
 import pirateHatYellowImg from '@/assets/slot1-yellow/pirate-hat.png';
+
+// Импорты жёлтых аксессуаров слота 2 (только с жёлтыми характеристиками)
+import ghostEnergyMaskImg from '@/assets/slot2-yellow/ghost-energy-mask.png';
+import respiratorImg from '@/assets/slot2-yellow/respirator.png';
+import skullMaskImg from '@/assets/slot2-yellow/skull-mask.png';
+import managerMaskImg from '@/assets/slot2-yellow/manager-mask.png';
+import guardMask1Img from '@/assets/slot2-yellow/guard-mask-1.png';
+import guardMask3Img from '@/assets/slot2-yellow/guard-mask-3.png';
+import guardMask2Img from '@/assets/slot2-yellow/guard-mask-2.png';
+import lokiMaskImg from '@/assets/slot2-yellow/loki-mask.png';
+import wrenchMaskImg from '@/assets/slot2-yellow/wrench-mask.png';
+import glentRobloxMaskImg from '@/assets/slot2-yellow/glent-roblox-mask.png';
 
 // Аксессуары Arizona RP
 export const accessories: Accessory[] = [
@@ -374,6 +386,127 @@ export const accessories: Accessory[] = [
     rarity: 'legendary',
     stats: { ...emptyStats, defense: 2, damage: 2, luck: 2 },
     imageUrl: headSphereImg,
+  },
+  // ===== СЛОТ 2 - ЛИЦО (ТОЛЬКО ЖЁЛТЫЕ ХАРАКТЕРИСТИКИ) =====
+  {
+    id: 401,
+    name: 'Энерго маска Госта',
+    slot: 2,
+    slotName: 'Лицо',
+    description: 'Энергетическая маска призрака',
+    rarity: 'legendary',
+    stats: { ...emptyStats },
+    yellowStats: { ...emptyStats, defense: 5, damage: 5, maxHp: 20, stunChance: 4, block: 4 },
+    imageUrl: ghostEnergyMaskImg,
+    isYellowOnly: true,
+  },
+  {
+    id: 402,
+    name: 'Респиратор',
+    slot: 2,
+    slotName: 'Лицо',
+    description: 'Киберпанковский респиратор',
+    rarity: 'rare',
+    stats: { ...emptyStats },
+    yellowStats: { ...emptyStats, defense: 1, damage: 1 },
+    imageUrl: respiratorImg,
+    isYellowOnly: true,
+  },
+  {
+    id: 403,
+    name: 'Маска череп',
+    slot: 2,
+    slotName: 'Лицо',
+    description: 'Маска в виде черепа',
+    rarity: 'epic',
+    stats: { ...emptyStats },
+    yellowStats: { ...emptyStats, damage: 2, maxArmor: 10 },
+    imageUrl: skullMaskImg,
+    isYellowOnly: true,
+  },
+  {
+    id: 404,
+    name: 'Маска распорядителя',
+    slot: 2,
+    slotName: 'Лицо',
+    description: 'Маска из сериала Игра в кальмара',
+    rarity: 'rare',
+    stats: { ...emptyStats },
+    yellowStats: { ...emptyStats, damage: 1, maxHp: 5 },
+    imageUrl: managerMaskImg,
+    isYellowOnly: true,
+  },
+  {
+    id: 405,
+    name: 'Маска охранника 1',
+    slot: 2,
+    slotName: 'Лицо',
+    description: 'Маска охранника с квадратом',
+    rarity: 'rare',
+    stats: { ...emptyStats },
+    yellowStats: { ...emptyStats, luck: 1, maxHp: 5 },
+    imageUrl: guardMask1Img,
+    isYellowOnly: true,
+  },
+  {
+    id: 406,
+    name: 'Маска охранника 3',
+    slot: 2,
+    slotName: 'Лицо',
+    description: 'Маска охранника с кругом',
+    rarity: 'rare',
+    stats: { ...emptyStats },
+    yellowStats: { ...emptyStats, defense: 1, maxHp: 5 },
+    imageUrl: guardMask3Img,
+    isYellowOnly: true,
+  },
+  {
+    id: 407,
+    name: 'Маска охранника 2',
+    slot: 2,
+    slotName: 'Лицо',
+    description: 'Маска охранника с треугольником',
+    rarity: 'rare',
+    stats: { ...emptyStats },
+    yellowStats: { ...emptyStats, damage: 1, maxHp: 5 },
+    imageUrl: guardMask2Img,
+    isYellowOnly: true,
+  },
+  {
+    id: 408,
+    name: 'Маска Локи',
+    slot: 2,
+    slotName: 'Лицо',
+    description: 'Зелёная маска Локи из фильма Маска',
+    rarity: 'epic',
+    stats: { ...emptyStats },
+    yellowStats: { ...emptyStats, damage: 1, maxHp: 5 },
+    imageUrl: lokiMaskImg,
+    isYellowOnly: true,
+  },
+  {
+    id: 409,
+    name: 'Маска «Wrench»',
+    slot: 2,
+    slotName: 'Лицо',
+    description: 'Маска Ренча из Watch Dogs',
+    rarity: 'epic',
+    stats: { ...emptyStats },
+    yellowStats: { ...emptyStats, defense: 1, maxHp: 5 },
+    imageUrl: wrenchMaskImg,
+    isYellowOnly: true,
+  },
+  {
+    id: 410,
+    name: 'Маска Глента из Роблокса',
+    slot: 2,
+    slotName: 'Лицо',
+    description: 'Голова персонажа Roblox',
+    rarity: 'epic',
+    stats: { ...emptyStats },
+    yellowStats: { ...emptyStats, maxHp: 15, maxArmor: 15 },
+    imageUrl: glentRobloxMaskImg,
+    isYellowOnly: true,
   },
 ];
 
