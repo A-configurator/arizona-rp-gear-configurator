@@ -376,7 +376,9 @@ const SlotModal = ({ slotNumber, accessories: slotAccessories, equippedId, onSel
         <div className="flex-1 overflow-y-auto p-3 arz-scrollbar">
           <div className="grid grid-cols-2 gap-2">
             {filteredAccessories.map((acc) => {
-              const statsToShow = Object.entries(acc.stats).filter(([_, value]) => value !== 0);
+              const statsToShow = acc.isYellowOnly 
+                ? Object.entries(acc.yellowStats || {}).filter(([_, value]) => value !== 0)
+                : Object.entries(acc.stats).filter(([_, value]) => value !== 0);
               return (
                 <div
                   key={acc.id}
@@ -391,6 +393,10 @@ const SlotModal = ({ slotNumber, accessories: slotAccessories, equippedId, onSel
                     <img src={acc.imageUrl} alt={acc.name} className="w-14 h-14 object-contain" />
                   )}
                   <div className="text-[10px] font-medium truncate w-full text-center">{acc.name}</div>
+                  {/* Yellow only label */}
+                  {acc.isYellowOnly && (
+                    <div className="text-[9px] font-medium text-yellow-400">Жёлтые характеристики</div>
+                  )}
                   {statsToShow.length > 0 && (
                     <div className="text-[8px] text-center leading-tight space-y-0.5 w-full">
                       {statsToShow.map(([key, value]) => {
@@ -412,7 +418,7 @@ const SlotModal = ({ slotNumber, accessories: slotAccessories, equippedId, onSel
                         };
                         return (
                           <div key={key}>
-                            <span className="text-destructive">{labels[statKey] || key}: </span>
+                            <span className={acc.isYellowOnly ? 'text-yellow-400' : 'text-destructive'}>{labels[statKey] || key}: </span>
                             <span className="text-foreground">{value > 0 ? `+${value}` : value}</span>
                           </div>
                         );
@@ -552,6 +558,123 @@ const YellowStatsModal = ({ slotNumber, onSelect, onSkip, onClose }: YellowStats
   );
 };
 
+// Base stats transfer modal (for yellow-only accessories)
+interface BaseStatsModalProps {
+  slotNumber: number;
+  accessories: Accessory[];
+  onSelect: (accessory: Accessory) => void;
+  onSkip: () => void;
+  onClose: () => void;
+}
+
+const BaseStatsModal = ({ slotNumber, accessories: allAccessories, onSelect, onSkip, onClose }: BaseStatsModalProps) => {
+  const [searchTerm, setSearchTerm] = useState('');
+  
+  // Фильтруем только обычные аксессуары (не yellow-only) для этого слота
+  const baseAccessories = allAccessories.filter(acc => acc.slot === slotNumber && !acc.isYellowOnly);
+
+  const filteredOptions = useMemo(() => {
+    if (!searchTerm.trim()) return baseAccessories;
+    return baseAccessories.filter((opt) =>
+      opt.name.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  }, [baseAccessories, searchTerm]);
+
+  const statLabels: Record<string, string> = {
+    defense: 'Защита',
+    damage: 'Урон',
+    luck: 'Удача',
+    regen: 'Регенерация',
+    maxHp: 'Макс. HP',
+    maxArmor: 'Макс. Брони',
+    stunChance: 'Шанс оглуш.',
+    drunkChance: 'Шанс опьянения',
+    antiStun: 'Анти-оглуш.',
+    reflect: 'Отражение',
+    block: 'Блок',
+    fireRate: 'Скорострельность',
+    recoil: 'Отдача',
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/80 backdrop-blur-sm" onClick={onClose}>
+      <div
+        className="w-full max-w-md max-h-[80vh] bg-card border border-border rounded-xl shadow-2xl flex flex-col overflow-hidden"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Header */}
+        <div className="flex items-center justify-between p-4 border-b border-border">
+          <h2 className="text-lg font-bold text-destructive">ПЕРЕНОС БАЗОВЫХ ХАРАКТЕРИСТИК</h2>
+          <button onClick={onClose} className="w-8 h-8 flex items-center justify-center rounded-full bg-secondary hover:bg-secondary/80 transition-colors">
+            <X className="w-4 h-4" />
+          </button>
+        </div>
+
+        {/* Search */}
+        <div className="p-3 border-b border-border">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+            <input
+              type="text"
+              placeholder="Поиск..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full pl-10 pr-4 py-2 bg-secondary border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-destructive/50"
+            />
+          </div>
+        </div>
+        
+        {/* Options list */}
+        <div className="flex-1 overflow-y-auto p-3 arz-scrollbar">
+          <div className="grid grid-cols-2 gap-2">
+            {filteredOptions.map((opt) => {
+              const statsToShow = Object.entries(opt.stats).filter(([_, value]) => value !== 0);
+              return (
+                <div
+                  key={opt.id}
+                  onClick={() => onSelect(opt)}
+                  className="p-2 bg-secondary rounded-lg cursor-pointer flex flex-col items-center gap-1 border-2 border-border hover:border-destructive/50 transition-all duration-200"
+                >
+                  {opt.imageUrl && (
+                    <img src={opt.imageUrl} alt={opt.name} className="w-14 h-14 object-contain" />
+                  )}
+                  <div className="text-[10px] font-medium truncate w-full text-center">{opt.name}</div>
+                  {statsToShow.length > 0 && (
+                    <div className="text-[8px] text-center leading-tight space-y-0.5 w-full">
+                      {statsToShow.map(([key, value]) => (
+                        <div key={key}>
+                          <span className="text-destructive">{statLabels[key] || key}: </span>
+                          <span className="text-foreground">+{value}</span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+          
+          {filteredOptions.length === 0 && (
+            <div className="text-center text-muted-foreground py-8 text-sm">
+              {searchTerm ? 'Ничего не найдено' : 'Нет доступных аксессуаров'}
+            </div>
+          )}
+        </div>
+
+        {/* Footer with skip button */}
+        <div className="p-3 border-t border-border">
+          <button
+            onClick={onSkip}
+            className="w-full py-2.5 px-4 bg-secondary text-foreground border border-border rounded-lg text-sm font-medium hover:bg-secondary/80 transition-colors"
+          >
+            Не переносить
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 // Stats display component
 const StatsDisplay = ({ stats }: { stats: AccessoryStats }) => {
   const statItems: { key: keyof AccessoryStats; label: string; format: (v: number) => string }[] = [
@@ -594,9 +717,10 @@ interface EquipmentSlotProps {
   slot6Type?: AccessoryType;
   onSlot6TypeChange?: (type: AccessoryType) => void;
   yellowStatsSource?: YellowStatsOption | null; // Источник жёлтых характеристик
+  baseStatsSource?: Accessory | null; // Источник базовых характеристик для жёлтых аксессуаров
 }
 
-const EquipmentSlot = ({ slotNumber, equipped, enhancement, onSlotClick, onEnhance, slot6Type, onSlot6TypeChange, yellowStatsSource }: EquipmentSlotProps) => {
+const EquipmentSlot = ({ slotNumber, equipped, enhancement, onSlotClick, onEnhance, slot6Type, onSlot6TypeChange, yellowStatsSource, baseStatsSource }: EquipmentSlotProps) => {
   return (
     <div className="flex flex-col">
       <div
@@ -619,10 +743,17 @@ const EquipmentSlot = ({ slotNumber, equipped, enhancement, onSlotClick, onEnhan
           <div className="text-xs text-muted-foreground">{SLOT_NAMES[slotNumber]}</div>
         )}
         
-        {/* Yellow stats source icon - top right corner */}
-        {yellowStatsSource && equipped && (
+        {/* Yellow stats source icon - top right corner (for normal accessories) */}
+        {yellowStatsSource && equipped && !equipped.isYellowOnly && (
           <div className="absolute -top-2 -right-2 w-12 h-12 rounded-full border-2 border-yellow-400 overflow-hidden bg-background">
             <img src={yellowStatsSource.imageUrl} alt={yellowStatsSource.name} className="w-full h-full object-contain" />
+          </div>
+        )}
+        
+        {/* Base stats source icon - top right corner (for yellow-only accessories) */}
+        {baseStatsSource && equipped && equipped.isYellowOnly && (
+          <div className="absolute -top-2 -right-2 w-12 h-12 rounded-full border-2 border-destructive overflow-hidden bg-background">
+            <img src={baseStatsSource.imageUrl} alt={baseStatsSource.name} className="w-full h-full object-contain" />
           </div>
         )}
       </div>
@@ -683,28 +814,38 @@ const Index = () => {
   const [slot6Type, setSlot6Type] = useState<AccessoryType>('attack');
   const [pendingAccessory, setPendingAccessory] = useState<Accessory | null>(null);
   const [showYellowModal, setShowYellowModal] = useState(false);
+  const [showBaseStatsModal, setShowBaseStatsModal] = useState(false); // Модалка для переноса базовых на жёлтые
   const [selectedYellowStats, setSelectedYellowStats] = useState<(YellowStatsOption | null)[]>(Array(8).fill(null)); // Выбранные жёлтые для каждого слота
+  const [selectedBaseStatsSource, setSelectedBaseStatsSource] = useState<(Accessory | null)[]>(Array(8).fill(null)); // Источник базовых для жёлтых
 
   const accessoryStats = calculateTotalStats(equippedAccessories);
   const yellowStats = useMemo(() => calculateYellowStats(equippedAccessories), [equippedAccessories]);
   const enhancementBonuses = useMemo(() => calculateEnhancementBonuses(enhancements, equippedAccessories, slot6Type), [enhancements, equippedAccessories, slot6Type]);
   const totalStats = combineTotalStats(BASE_STATS, selectedSkin?.stats || null, accessoryStats, enhancementBonuses, yellowStats);
 
-  // Когда выбирают аксессуар - показываем модалку жёлтых характеристик
+  // Когда выбирают аксессуар
   const handleSelectAccessory = useCallback((accessory: Accessory) => {
-    const yellowOptions = getYellowStatsForSlot(accessory.slot);
-    if (yellowOptions.length > 0) {
+    // Если это аксессуар только с жёлтыми - показываем модалку переноса базовых
+    if (accessory.isYellowOnly) {
       setPendingAccessory(accessory);
       setSelectedSlot(null);
-      setShowYellowModal(true);
+      setShowBaseStatsModal(true);
     } else {
-      // Нет жёлтых характеристик для этого слота - просто экипируем
-      setEquippedAccessories((prev) => {
-        const newEquipped = [...prev];
-        newEquipped[accessory.slot - 1] = accessory;
-        return newEquipped;
-      });
-      setSelectedSlot(null);
+      // Обычный аксессуар - показываем модалку переноса жёлтых (если есть)
+      const yellowOptions = getYellowStatsForSlot(accessory.slot);
+      if (yellowOptions.length > 0) {
+        setPendingAccessory(accessory);
+        setSelectedSlot(null);
+        setShowYellowModal(true);
+      } else {
+        // Нет жёлтых характеристик для этого слота - просто экипируем
+        setEquippedAccessories((prev) => {
+          const newEquipped = [...prev];
+          newEquipped[accessory.slot - 1] = accessory;
+          return newEquipped;
+        });
+        setSelectedSlot(null);
+      }
     }
   }, []);
 
@@ -762,6 +903,49 @@ const Index = () => {
     }
     setPendingAccessory(null);
     setShowYellowModal(false);
+  }, [pendingAccessory]);
+
+  // Выбрали базовые характеристики для переноса на жёлтый аксессуар
+  const handleSelectBaseStats = useCallback((sourceAccessory: Accessory) => {
+    if (pendingAccessory) {
+      // Добавляем базовые статы от источника к жёлтому аксессуару
+      const accessoryWithBaseStats: Accessory = {
+        ...pendingAccessory,
+        stats: { ...sourceAccessory.stats },
+      };
+      setEquippedAccessories((prev) => {
+        const newEquipped = [...prev];
+        newEquipped[pendingAccessory.slot - 1] = accessoryWithBaseStats;
+        return newEquipped;
+      });
+      // Сохраняем источник базовых статов
+      setSelectedBaseStatsSource((prev) => {
+        const newSources = [...prev];
+        newSources[pendingAccessory.slot - 1] = sourceAccessory;
+        return newSources;
+      });
+    }
+    setPendingAccessory(null);
+    setShowBaseStatsModal(false);
+  }, [pendingAccessory]);
+
+  // Пропустить перенос базовых характеристик
+  const handleSkipBaseStats = useCallback(() => {
+    if (pendingAccessory) {
+      setEquippedAccessories((prev) => {
+        const newEquipped = [...prev];
+        newEquipped[pendingAccessory.slot - 1] = pendingAccessory;
+        return newEquipped;
+      });
+      // Очищаем источник базовых статов
+      setSelectedBaseStatsSource((prev) => {
+        const newSources = [...prev];
+        newSources[pendingAccessory.slot - 1] = null;
+        return newSources;
+      });
+    }
+    setPendingAccessory(null);
+    setShowBaseStatsModal(false);
   }, [pendingAccessory]);
 
   const handleUnequip = useCallback((slotIndex: number) => {
@@ -837,6 +1021,7 @@ const Index = () => {
             slot6Type={slot6Type}
             onSlot6TypeChange={setSlot6Type}
             yellowStatsSource={selectedYellowStats[slotNum - 1]}
+            baseStatsSource={selectedBaseStatsSource[slotNum - 1]}
           />
         ))}
       </div>
@@ -862,6 +1047,20 @@ const Index = () => {
           onClose={() => {
             setPendingAccessory(null);
             setShowYellowModal(false);
+          }}
+        />
+      )}
+
+      {/* Base stats transfer modal for yellow-only accessories */}
+      {showBaseStatsModal && pendingAccessory && (
+        <BaseStatsModal
+          slotNumber={pendingAccessory.slot}
+          accessories={accessories}
+          onSelect={handleSelectBaseStats}
+          onSkip={handleSkipBaseStats}
+          onClose={() => {
+            setPendingAccessory(null);
+            setShowBaseStatsModal(false);
           }}
         />
       )}

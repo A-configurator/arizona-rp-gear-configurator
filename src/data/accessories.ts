@@ -31,6 +31,7 @@ export interface Accessory {
   yellowStats?: AccessoryStats;     // Жёлтые характеристики (переносятся отдельно)
   accessoryType?: AccessoryType;    // Тип аксессуара (для слота 6)
   imageUrl?: string;
+  isYellowOnly?: boolean;          // Аксессуар только с жёлтыми характеристиками
 }
 
 export const SLOT_NAMES: Record<number, string> = {
@@ -90,6 +91,18 @@ import happyPepeImg from '@/assets/accessories/happy-pepe.png';
 import pumpkinHeadImg from '@/assets/accessories/pumpkin-head.png';
 import jetpackImg from '@/assets/accessories/jetpack.png';
 import spaceJetpackImg from '@/assets/accessories/space-jetpack.png';
+
+// Импорты жёлтых аксессуаров (только с жёлтыми характеристиками)
+import nimbRingYellowImg from '@/assets/slot1-yellow/nimb-ring.png';
+import tangoYellowImg from '@/assets/slot1-yellow/tango.png';
+import nimbDoraYellowImg from '@/assets/slot1-yellow/nimb-dora.png';
+import nimbMollyYellowImg from '@/assets/slot1-yellow/nimb-molly.png';
+import exclusiveHat4YellowImg from '@/assets/slot1-yellow/exclusive-hat-4.png';
+import exclusiveHat3YellowImg from '@/assets/slot1-yellow/exclusive-hat-3.png';
+import exclusiveHat2YellowImg from '@/assets/slot1-yellow/exclusive-hat-2.png';
+import exclusiveHat1YellowImg from '@/assets/slot1-yellow/exclusive-hat-1.png';
+import tacticalHelmetYellowImg from '@/assets/slot1-yellow/tactical-helmet.png';
+import pirateHatYellowImg from '@/assets/slot1-yellow/pirate-hat.png';
 
 // Аксессуары Arizona RP
 export const accessories: Accessory[] = [
@@ -193,6 +206,127 @@ export const accessories: Accessory[] = [
     rarity: 'epic',
     stats: { ...emptyStats, defense: 2, damage: 2, luck: 2 },
     imageUrl: spaceJetpackImg,
+  },
+  // ===== СЛОТ 1 - ГОЛОВА (ТОЛЬКО ЖЁЛТЫЕ ХАРАКТЕРИСТИКИ) =====
+  {
+    id: 201,
+    name: 'Нимб кольца всевластия',
+    slot: 1,
+    slotName: 'Голова',
+    description: 'Кольцо всевластия',
+    rarity: 'legendary',
+    stats: { ...emptyStats },
+    yellowStats: { ...emptyStats, defense: 3, damage: 3, luck: 1, maxHp: 19 },
+    imageUrl: nimbRingYellowImg,
+    isYellowOnly: true,
+  },
+  {
+    id: 202,
+    name: 'Танго',
+    slot: 1,
+    slotName: 'Голова',
+    description: 'Танцующий нимб',
+    rarity: 'rare',
+    stats: { ...emptyStats },
+    yellowStats: { ...emptyStats, defense: 2, damage: 1, luck: 1, maxHp: 10 },
+    imageUrl: tangoYellowImg,
+    isYellowOnly: true,
+  },
+  {
+    id: 203,
+    name: 'Нимб Доры',
+    slot: 1,
+    slotName: 'Голова',
+    description: 'Нимб исследовательницы',
+    rarity: 'rare',
+    stats: { ...emptyStats },
+    yellowStats: { ...emptyStats, defense: 2, damage: 1, luck: 1, maxHp: 10 },
+    imageUrl: nimbDoraYellowImg,
+    isYellowOnly: true,
+  },
+  {
+    id: 204,
+    name: 'Нимб Пошлой Молли',
+    slot: 1,
+    slotName: 'Голова',
+    description: 'Особенный нимб',
+    rarity: 'epic',
+    stats: { ...emptyStats },
+    yellowStats: { ...emptyStats, luck: 2, antiStun: 8, reflect: 2 },
+    imageUrl: nimbMollyYellowImg,
+    isYellowOnly: true,
+  },
+  {
+    id: 205,
+    name: 'Эксклюзивная шляпа 4',
+    slot: 1,
+    slotName: 'Голова',
+    description: 'Эксклюзивная шляпа',
+    rarity: 'rare',
+    stats: { ...emptyStats },
+    yellowStats: { ...emptyStats, damage: 1, maxHp: 5 },
+    imageUrl: exclusiveHat4YellowImg,
+    isYellowOnly: true,
+  },
+  {
+    id: 206,
+    name: 'Эксклюзивная шляпа 3',
+    slot: 1,
+    slotName: 'Голова',
+    description: 'Эксклюзивная шляпа',
+    rarity: 'rare',
+    stats: { ...emptyStats },
+    yellowStats: { ...emptyStats, defense: 1, maxHp: 5 },
+    imageUrl: exclusiveHat3YellowImg,
+    isYellowOnly: true,
+  },
+  {
+    id: 207,
+    name: 'Эксклюзивная шляпа 2',
+    slot: 1,
+    slotName: 'Голова',
+    description: 'Эксклюзивная шляпа',
+    rarity: 'rare',
+    stats: { ...emptyStats },
+    yellowStats: { ...emptyStats, luck: 1, maxHp: 5 },
+    imageUrl: exclusiveHat2YellowImg,
+    isYellowOnly: true,
+  },
+  {
+    id: 208,
+    name: 'Эксклюзивная шляпа 1',
+    slot: 1,
+    slotName: 'Голова',
+    description: 'Эксклюзивная шляпа',
+    rarity: 'rare',
+    stats: { ...emptyStats },
+    yellowStats: { ...emptyStats, damage: 1, maxHp: 5 },
+    imageUrl: exclusiveHat1YellowImg,
+    isYellowOnly: true,
+  },
+  {
+    id: 209,
+    name: 'Тактический шлем',
+    slot: 1,
+    slotName: 'Голова',
+    description: 'Военный тактический шлем',
+    rarity: 'epic',
+    stats: { ...emptyStats },
+    yellowStats: { ...emptyStats, defense: 2, maxArmor: 10 },
+    imageUrl: tacticalHelmetYellowImg,
+    isYellowOnly: true,
+  },
+  {
+    id: 210,
+    name: 'Пиратская шляпа №1',
+    slot: 1,
+    slotName: 'Голова',
+    description: 'Шляпа настоящего пирата',
+    rarity: 'rare',
+    stats: { ...emptyStats },
+    yellowStats: { ...emptyStats, defense: 1, damage: 1, luck: 1, stunChance: 1 },
+    imageUrl: pirateHatYellowImg,
+    isYellowOnly: true,
   },
 ];
 
