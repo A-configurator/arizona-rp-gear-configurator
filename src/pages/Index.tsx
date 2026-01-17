@@ -765,17 +765,17 @@ const EquipmentSlot = ({ slotNumber, equipped, enhancement, onSlotClick, onEnhan
           <div className="text-xs text-muted-foreground">{SLOT_NAMES[slotNumber]}</div>
         )}
         
-        {/* Yellow stats source icon - top right corner (for normal accessories) */}
-        {yellowStatsSource && equipped && !equipped.isYellowOnly && (
-          <div className="absolute -top-2 -right-2 w-12 h-12 rounded-full border-2 border-yellow-400 overflow-hidden bg-background">
-            <img src={yellowStatsSource.imageUrl} alt={yellowStatsSource.name} className="w-full h-full object-contain" />
+        {/* Base stats source icon - top LEFT corner */}
+        {baseStatsSource && equipped && (
+          <div className="absolute -top-2 -left-2 w-10 h-10 rounded-full border-2 border-destructive overflow-hidden bg-background">
+            <img src={baseStatsSource.imageUrl} alt={baseStatsSource.name} className="w-full h-full object-contain" />
           </div>
         )}
         
-        {/* Base stats source icon - top LEFT corner (for yellow-only accessories) */}
-        {baseStatsSource && equipped && equipped.isYellowOnly && (
-          <div className="absolute -top-2 -left-2 w-12 h-12 rounded-full border-2 border-destructive overflow-hidden bg-background">
-            <img src={baseStatsSource.imageUrl} alt={baseStatsSource.name} className="w-full h-full object-contain" />
+        {/* Yellow stats source icon - top RIGHT corner */}
+        {yellowStatsSource && equipped && (
+          <div className="absolute -top-2 -right-2 w-10 h-10 rounded-full border-2 border-yellow-400 overflow-hidden bg-background">
+            <img src={yellowStatsSource.imageUrl} alt={yellowStatsSource.name} className="w-full h-full object-contain" />
           </div>
         )}
       </div>
