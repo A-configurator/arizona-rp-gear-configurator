@@ -154,14 +154,20 @@ const calculateSlotBonuses = (
   return bonuses;
 };
 
-// Calculate total bonuses from all slot enhancements
-const calculateEnhancementBonuses = (enhancements: number[]): AccessoryStats => {
+// Calculate total bonuses from all slot enhancements (only for equipped slots)
+const calculateEnhancementBonuses = (
+  enhancements: number[], 
+  equippedAccessories: (Accessory | null)[]
+): AccessoryStats => {
   const total: AccessoryStats = {
     defense: 0, regen: 0, damage: 0, luck: 0, maxHp: 0, maxArmor: 0,
     stunChance: 0, drunkChance: 0, antiStun: 0, reflect: 0, block: 0, fireRate: 0, recoil: 0
   };
 
   enhancements.forEach((level, index) => {
+    // Only calculate bonuses if an accessory is equipped in this slot
+    if (!equippedAccessories[index]) return;
+    
     const slot = index + 1;
     // For slot 6, default to 'attack' type - can be made dynamic later
     const bonuses = calculateSlotBonuses(slot, level, 'attack');
@@ -463,7 +469,7 @@ const Index = () => {
   const [showSkinModal, setShowSkinModal] = useState(false);
 
   const accessoryStats = calculateTotalStats(equippedAccessories);
-  const enhancementBonuses = useMemo(() => calculateEnhancementBonuses(enhancements), [enhancements]);
+  const enhancementBonuses = useMemo(() => calculateEnhancementBonuses(enhancements, equippedAccessories), [enhancements, equippedAccessories]);
   const totalStats = combineTotalStats(BASE_STATS, selectedSkin?.stats || null, accessoryStats, enhancementBonuses);
 
   const handleEquip = useCallback((accessory: Accessory) => {
