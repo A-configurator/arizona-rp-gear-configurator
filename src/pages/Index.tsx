@@ -587,8 +587,8 @@ interface BaseStatsModalProps {
 const BaseStatsModal = ({ slotNumber, accessories: allAccessories, excludeId, onSelect, onSkip, onClose }: BaseStatsModalProps) => {
   const [searchTerm, setSearchTerm] = useState('');
   
-  // Фильтруем аксессуары этого слота, исключая себя
-  const baseAccessories = allAccessories.filter(acc => acc.slot === slotNumber && acc.id !== excludeId);
+  // Фильтруем аксессуары этого слота, исключая себя и жёлтые аксессуары (у них нет базовых статов)
+  const baseAccessories = allAccessories.filter(acc => acc.slot === slotNumber && acc.id !== excludeId && !acc.isYellowOnly);
 
   const filteredOptions = useMemo(() => {
     if (!searchTerm.trim()) return baseAccessories;
