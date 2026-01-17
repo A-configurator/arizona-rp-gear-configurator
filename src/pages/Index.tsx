@@ -1,5 +1,5 @@
 import { useState, useCallback, useMemo } from 'react';
-import { Accessory, accessories, calculateTotalStats, SLOT_NAMES, AccessoryStats } from '@/data/accessories';
+import { Accessory, accessories, calculateTotalStats, SLOT_NAMES, AccessoryStats, AccessoryType, getEmptyStats } from '@/data/accessories';
 import { X, Minus, Plus, Search } from 'lucide-react';
 
 // Skin images
@@ -65,7 +65,6 @@ const skins: Skin[] = [
 // Slot 3, 4 (Attack): Damage
 // Slot 6 (Universal): Damage or Defense based on accessory type
 // Slot 7, 8: No special bonuses from levels
-type AccessoryType = 'attack' | 'defense';
 
 const calculateSlotBonuses = (
   slot: number, 
@@ -157,7 +156,8 @@ const calculateSlotBonuses = (
 // Calculate total bonuses from all slot enhancements (only for equipped slots)
 const calculateEnhancementBonuses = (
   enhancements: number[], 
-  equippedAccessories: (Accessory | null)[]
+  equippedAccessories: (Accessory | null)[],
+  slot6Type: AccessoryType
 ): AccessoryStats => {
   const total: AccessoryStats = {
     defense: 0, regen: 0, damage: 0, luck: 0, maxHp: 0, maxArmor: 0,
@@ -169,8 +169,11 @@ const calculateEnhancementBonuses = (
     if (!equippedAccessories[index]) return;
     
     const slot = index + 1;
-    // For slot 6, default to 'attack' type - can be made dynamic later
-    const bonuses = calculateSlotBonuses(slot, level, 'attack');
+    // Use slot 6 type from accessory or state
+    const accessoryType = slot === 6 
+      ? (equippedAccessories[index]?.accessoryType || slot6Type)
+      : 'attack';
+    const bonuses = calculateSlotBonuses(slot, level, accessoryType);
     
     (Object.keys(bonuses) as (keyof AccessoryStats)[]).forEach((key) => {
       total[key] += bonuses[key] || 0;
@@ -180,27 +183,43 @@ const calculateEnhancementBonuses = (
   return total;
 };
 
-// Combine base stats + skin stats + accessory stats + enhancement bonuses
+// Calculate total yellow stats from all equipped accessories
+const calculateYellowStats = (equippedAccessories: (Accessory | null)[]): AccessoryStats => {
+  const total = getEmptyStats();
+  
+  equippedAccessories.forEach((acc) => {
+    if (acc?.yellowStats) {
+      (Object.keys(total) as (keyof AccessoryStats)[]).forEach((key) => {
+        total[key] += acc.yellowStats![key] || 0;
+      });
+    }
+  });
+  
+  return total;
+};
+
+// Combine base stats + skin stats + accessory stats + enhancement bonuses + yellow stats
 const combineTotalStats = (
   baseStats: AccessoryStats, 
   skinStats: SkinStats | null, 
   accessoryStats: AccessoryStats,
-  enhancementBonuses: AccessoryStats
+  enhancementBonuses: AccessoryStats,
+  yellowStats: AccessoryStats
 ): AccessoryStats => {
   return {
-    defense: baseStats.defense + (skinStats?.defense || 0) + accessoryStats.defense + enhancementBonuses.defense,
-    regen: baseStats.regen + accessoryStats.regen + enhancementBonuses.regen,
-    damage: baseStats.damage + (skinStats?.damage || 0) + accessoryStats.damage + enhancementBonuses.damage,
-    luck: baseStats.luck + accessoryStats.luck + enhancementBonuses.luck,
-    maxHp: baseStats.maxHp + accessoryStats.maxHp + enhancementBonuses.maxHp,
-    maxArmor: baseStats.maxArmor + (skinStats?.maxArmor || 0) + accessoryStats.maxArmor + enhancementBonuses.maxArmor,
-    stunChance: baseStats.stunChance + accessoryStats.stunChance + enhancementBonuses.stunChance,
-    drunkChance: baseStats.drunkChance + accessoryStats.drunkChance + enhancementBonuses.drunkChance,
-    antiStun: baseStats.antiStun + accessoryStats.antiStun + enhancementBonuses.antiStun,
-    reflect: baseStats.reflect + (skinStats?.reflect || 0) + accessoryStats.reflect + enhancementBonuses.reflect,
-    block: baseStats.block + accessoryStats.block + enhancementBonuses.block,
-    fireRate: baseStats.fireRate + accessoryStats.fireRate + enhancementBonuses.fireRate,
-    recoil: baseStats.recoil + accessoryStats.recoil + enhancementBonuses.recoil,
+    defense: baseStats.defense + (skinStats?.defense || 0) + accessoryStats.defense + enhancementBonuses.defense + yellowStats.defense,
+    regen: baseStats.regen + accessoryStats.regen + enhancementBonuses.regen + yellowStats.regen,
+    damage: baseStats.damage + (skinStats?.damage || 0) + accessoryStats.damage + enhancementBonuses.damage + yellowStats.damage,
+    luck: baseStats.luck + accessoryStats.luck + enhancementBonuses.luck + yellowStats.luck,
+    maxHp: baseStats.maxHp + accessoryStats.maxHp + enhancementBonuses.maxHp + yellowStats.maxHp,
+    maxArmor: baseStats.maxArmor + (skinStats?.maxArmor || 0) + accessoryStats.maxArmor + enhancementBonuses.maxArmor + yellowStats.maxArmor,
+    stunChance: baseStats.stunChance + accessoryStats.stunChance + enhancementBonuses.stunChance + yellowStats.stunChance,
+    drunkChance: baseStats.drunkChance + accessoryStats.drunkChance + enhancementBonuses.drunkChance + yellowStats.drunkChance,
+    antiStun: baseStats.antiStun + accessoryStats.antiStun + enhancementBonuses.antiStun + yellowStats.antiStun,
+    reflect: baseStats.reflect + (skinStats?.reflect || 0) + accessoryStats.reflect + enhancementBonuses.reflect + yellowStats.reflect,
+    block: baseStats.block + accessoryStats.block + enhancementBonuses.block + yellowStats.block,
+    fireRate: baseStats.fireRate + accessoryStats.fireRate + enhancementBonuses.fireRate + yellowStats.fireRate,
+    recoil: baseStats.recoil + accessoryStats.recoil + enhancementBonuses.recoil + yellowStats.recoil,
   };
 };
 
@@ -418,9 +437,11 @@ interface EquipmentSlotProps {
   enhancement: number;
   onSlotClick: () => void;
   onEnhance: (delta: number) => void;
+  slot6Type?: AccessoryType;
+  onSlot6TypeChange?: (type: AccessoryType) => void;
 }
 
-const EquipmentSlot = ({ slotNumber, equipped, enhancement, onSlotClick, onEnhance }: EquipmentSlotProps) => {
+const EquipmentSlot = ({ slotNumber, equipped, enhancement, onSlotClick, onEnhance, slot6Type, onSlot6TypeChange }: EquipmentSlotProps) => {
   return (
     <div className="flex flex-col">
       <div
@@ -457,6 +478,32 @@ const EquipmentSlot = ({ slotNumber, equipped, enhancement, onSlotClick, onEnhan
           <Plus className="w-3 h-3" />
         </button>
       </div>
+
+      {/* Slot 6 type toggle */}
+      {slotNumber === 6 && equipped && onSlot6TypeChange && (
+        <div className="flex items-center justify-center gap-1 mt-1">
+          <button
+            onClick={(e) => { e.stopPropagation(); onSlot6TypeChange('attack'); }}
+            className={`text-[9px] px-1.5 py-0.5 rounded transition-colors ${
+              slot6Type === 'attack' 
+                ? 'bg-destructive text-destructive-foreground' 
+                : 'bg-secondary text-muted-foreground hover:bg-secondary/80'
+            }`}
+          >
+            АТК
+          </button>
+          <button
+            onClick={(e) => { e.stopPropagation(); onSlot6TypeChange('defense'); }}
+            className={`text-[9px] px-1.5 py-0.5 rounded transition-colors ${
+              slot6Type === 'defense' 
+                ? 'bg-primary text-primary-foreground' 
+                : 'bg-secondary text-muted-foreground hover:bg-secondary/80'
+            }`}
+          >
+            ЗАЩ
+          </button>
+        </div>
+      )}
     </div>
   );
 };
@@ -467,10 +514,12 @@ const Index = () => {
   const [selectedSlot, setSelectedSlot] = useState<number | null>(null);
   const [selectedSkin, setSelectedSkin] = useState<Skin | null>(null);
   const [showSkinModal, setShowSkinModal] = useState(false);
+  const [slot6Type, setSlot6Type] = useState<AccessoryType>('attack'); // Тип для 6 слота
 
   const accessoryStats = calculateTotalStats(equippedAccessories);
-  const enhancementBonuses = useMemo(() => calculateEnhancementBonuses(enhancements, equippedAccessories), [enhancements, equippedAccessories]);
-  const totalStats = combineTotalStats(BASE_STATS, selectedSkin?.stats || null, accessoryStats, enhancementBonuses);
+  const yellowStats = useMemo(() => calculateYellowStats(equippedAccessories), [equippedAccessories]);
+  const enhancementBonuses = useMemo(() => calculateEnhancementBonuses(enhancements, equippedAccessories, slot6Type), [enhancements, equippedAccessories, slot6Type]);
+  const totalStats = combineTotalStats(BASE_STATS, selectedSkin?.stats || null, accessoryStats, enhancementBonuses, yellowStats);
 
   const handleEquip = useCallback((accessory: Accessory) => {
     setEquippedAccessories((prev) => {
@@ -549,6 +598,8 @@ const Index = () => {
             enhancement={enhancements[slotNum - 1]}
             onSlotClick={() => setSelectedSlot(slotNum)}
             onEnhance={(delta) => handleEnhance(slotNum - 1, delta)}
+            slot6Type={slot6Type}
+            onSlot6TypeChange={setSlot6Type}
           />
         ))}
       </div>

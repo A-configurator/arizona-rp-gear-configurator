@@ -17,6 +17,9 @@ export interface AccessoryStats {
   recoil: number;         // Отдача (%)
 }
 
+// Type of accessory (for slot 6 universal)
+export type AccessoryType = 'attack' | 'defense';
+
 export interface Accessory {
   id: number;
   name: string;
@@ -24,7 +27,9 @@ export interface Accessory {
   slotName: string;
   description: string;
   rarity: 'common' | 'rare' | 'epic' | 'legendary';
-  stats: AccessoryStats;
+  stats: AccessoryStats;           // Базовые характеристики (могут переноситься)
+  yellowStats?: AccessoryStats;     // Жёлтые характеристики (переносятся отдельно)
+  accessoryType?: AccessoryType;    // Тип аксессуара (для слота 6)
   imageUrl?: string;
 }
 
