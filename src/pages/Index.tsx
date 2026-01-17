@@ -615,7 +615,7 @@ const EquipmentSlot = ({ slotNumber, equipped, enhancement, onSlotClick, onEnhan
         
         {/* Yellow stats source icon - top right corner */}
         {yellowStatsSource && equipped && (
-          <div className="absolute -top-1 -right-1 w-6 h-6 rounded-full border-2 border-yellow-400 overflow-hidden bg-background">
+          <div className="absolute -top-2 -right-2 w-12 h-12 rounded-full border-2 border-yellow-400 overflow-hidden bg-background">
             <img src={yellowStatsSource.imageUrl} alt={yellowStatsSource.name} className="w-full h-full object-contain" />
           </div>
         )}
