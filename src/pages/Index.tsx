@@ -151,7 +151,7 @@ const Index = () => {
   const handleEnhance = useCallback((slotIndex: number, delta: number) => {
     setEnhancements((prev) => {
       const newEnhancements = [...prev];
-      newEnhancements[slotIndex] = Math.max(0, Math.min(16, newEnhancements[slotIndex] + delta));
+      newEnhancements[slotIndex] = Math.max(0, Math.min(14, newEnhancements[slotIndex] + delta));
       return newEnhancements;
     });
   }, []);
@@ -167,13 +167,10 @@ const Index = () => {
         © Arizona RP Configurator, 2025
       </div>
 
-      {/* Tabs */}
-      <div className="flex gap-4 mb-4">
-        <span className="text-accent font-bold">
+      {/* Title */}
+      <div className="text-center mb-4">
+        <span className="text-accent font-bold text-xl">
           <span className="text-2xl">А</span>ксики
-        </span>
-        <span className="text-muted-foreground font-bold">
-          <span className="text-2xl">С</span>етики
         </span>
       </div>
 
