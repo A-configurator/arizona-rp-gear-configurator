@@ -132,6 +132,18 @@ import magicAxeImg from '@/assets/slot3-hand/magic-axe.png';
 import frapsSignImg from '@/assets/slot3-hand/fraps-sign.png';
 import azzinothBladesImg from '@/assets/slot3-hand/azzinoth-blades.png';
 
+// Импорты жёлтых аксессуаров слота 3 (только с жёлтыми характеристиками)
+import energyWatchImg from '@/assets/slot3-yellow/energy-watch.png';
+import bumblebeeWeaponImg from '@/assets/slot3-yellow/bumblebee-weapon.png';
+import pirateLanternImg from '@/assets/slot3-yellow/pirate-lantern.png';
+import banditCrossbowImg from '@/assets/slot3-yellow/bandit-crossbow.png';
+import watchCartierImg from '@/assets/slot3-yellow/watch-cartier.png';
+import watchCasioImg from '@/assets/slot3-yellow/watch-casio.png';
+import watchRolexImg from '@/assets/slot3-yellow/watch-rolex.png';
+import watchGucciImg from '@/assets/slot3-yellow/watch-gucci.png';
+import watchPatekImg from '@/assets/slot3-yellow/watch-patek.png';
+import watchAppleImg from '@/assets/slot3-yellow/watch-apple.png';
+
 // Аксессуары Arizona RP
 export const accessories: Accessory[] = [
   // ===== СЛОТ 1 - ГОЛОВА =====
@@ -598,6 +610,127 @@ export const accessories: Accessory[] = [
     rarity: 'legendary',
     stats: { ...emptyStats, defense: -2, damage: 2, luck: 2 },
     imageUrl: azzinothBladesImg,
+  },
+  // ===== СЛОТ 3 - РУКА (ТОЛЬКО ЖЁЛТЫЕ ХАРАКТЕРИСТИКИ) =====
+  {
+    id: 601,
+    name: 'Энергетические часы',
+    slot: 3,
+    slotName: 'Рука',
+    description: 'Футуристические энергетические часы',
+    rarity: 'legendary',
+    stats: { ...emptyStats },
+    yellowStats: { ...emptyStats, defense: 2, damage: 2, maxHp: 5, maxArmor: 5, reflect: 6 },
+    imageUrl: energyWatchImg,
+    isYellowOnly: true,
+  },
+  {
+    id: 602,
+    name: 'Оружие Бамбл Би',
+    slot: 3,
+    slotName: 'Рука',
+    description: 'Оружие трансформера Бамблби',
+    rarity: 'epic',
+    stats: { ...emptyStats },
+    yellowStats: { ...emptyStats, defense: 1, damage: 1 },
+    imageUrl: bumblebeeWeaponImg,
+    isYellowOnly: true,
+  },
+  {
+    id: 603,
+    name: 'Пиратский фонарь',
+    slot: 3,
+    slotName: 'Рука',
+    description: 'Старинный пиратский фонарь',
+    rarity: 'rare',
+    stats: { ...emptyStats },
+    yellowStats: { ...emptyStats, defense: 1, damage: 1, luck: 1, drunkChance: 1 },
+    imageUrl: pirateLanternImg,
+    isYellowOnly: true,
+  },
+  {
+    id: 604,
+    name: 'Бандитский арбалет',
+    slot: 3,
+    slotName: 'Рука',
+    description: 'Арбалет бандита',
+    rarity: 'epic',
+    stats: { ...emptyStats },
+    yellowStats: { ...emptyStats, luck: 3, antiStun: 4, reflect: 1 },
+    imageUrl: banditCrossbowImg,
+    isYellowOnly: true,
+  },
+  {
+    id: 605,
+    name: 'Часы «Panthere de Cartier»',
+    slot: 3,
+    slotName: 'Рука',
+    description: 'Элитные часы Cartier',
+    rarity: 'rare',
+    stats: { ...emptyStats },
+    yellowStats: { ...emptyStats, luck: 1, maxHp: 5 },
+    imageUrl: watchCartierImg,
+    isYellowOnly: true,
+  },
+  {
+    id: 606,
+    name: 'Часы «Relogios Casio»',
+    slot: 3,
+    slotName: 'Рука',
+    description: 'Классические часы Casio',
+    rarity: 'rare',
+    stats: { ...emptyStats },
+    yellowStats: { ...emptyStats, defense: 1, maxHp: 5 },
+    imageUrl: watchCasioImg,
+    isYellowOnly: true,
+  },
+  {
+    id: 607,
+    name: 'Часы «Rolex Submariner»',
+    slot: 3,
+    slotName: 'Рука',
+    description: 'Легендарные часы Rolex',
+    rarity: 'epic',
+    stats: { ...emptyStats },
+    yellowStats: { ...emptyStats, defense: 1, maxHp: 5 },
+    imageUrl: watchRolexImg,
+    isYellowOnly: true,
+  },
+  {
+    id: 608,
+    name: 'Часы «Gucci»',
+    slot: 3,
+    slotName: 'Рука',
+    description: 'Стильные часы Gucci',
+    rarity: 'epic',
+    stats: { ...emptyStats },
+    yellowStats: { ...emptyStats, damage: 1, maxHp: 5 },
+    imageUrl: watchGucciImg,
+    isYellowOnly: true,
+  },
+  {
+    id: 609,
+    name: 'Часы «Patek Philippe Nautilus»',
+    slot: 3,
+    slotName: 'Рука',
+    description: 'Роскошные часы Patek Philippe',
+    rarity: 'legendary',
+    stats: { ...emptyStats },
+    yellowStats: { ...emptyStats, luck: 1, maxHp: 5 },
+    imageUrl: watchPatekImg,
+    isYellowOnly: true,
+  },
+  {
+    id: 610,
+    name: 'Часы «Apple Watch»',
+    slot: 3,
+    slotName: 'Рука',
+    description: 'Смарт-часы Apple',
+    rarity: 'rare',
+    stats: { ...emptyStats },
+    yellowStats: { ...emptyStats, defense: 1, maxHp: 5 },
+    imageUrl: watchAppleImg,
+    isYellowOnly: true,
   },
 ];
 
