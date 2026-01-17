@@ -316,7 +316,6 @@ const Index = () => {
   const [selectedSlot, setSelectedSlot] = useState<number | null>(null);
   const [selectedSkin, setSelectedSkin] = useState<Skin | null>(skins[0] || null);
   const [showSkinModal, setShowSkinModal] = useState(false);
-  const [skinEnhancement, setSkinEnhancement] = useState(12);
 
   // Базовые статы скина при +12 заточке
   const SKIN_BASE_STATS_AT_12: Partial<AccessoryStats> = {
@@ -333,12 +332,11 @@ const Index = () => {
     const accessoryStats = calculateTotalStats(equippedAccessories);
     
     if (selectedSkin) {
-      // Добавляем базовые статы от заточки скина (масштабируются от уровня)
-      const enhancementMultiplier = skinEnhancement / 12;
+      // Добавляем базовые статы от заточки скина (+12 фиксировано)
       (Object.keys(SKIN_BASE_STATS_AT_12) as (keyof AccessoryStats)[]).forEach((key) => {
         const baseValue = SKIN_BASE_STATS_AT_12[key];
         if (baseValue !== undefined) {
-          accessoryStats[key] += Math.round(baseValue * enhancementMultiplier);
+          accessoryStats[key] += baseValue;
         }
       });
       
@@ -352,7 +350,7 @@ const Index = () => {
     }
     
     return accessoryStats;
-  }, [equippedAccessories, selectedSkin, skinEnhancement]);
+  }, [equippedAccessories, selectedSkin]);
 
   const handleEquip = useCallback((accessory: Accessory) => {
     setEquippedAccessories((prev) => {
@@ -413,22 +411,10 @@ const Index = () => {
             )}
           </div>
           
-          {/* Skin enhancement controls */}
+          {/* Skin enhancement - fixed */}
           <div className="flex items-center justify-center gap-1 mt-2">
             <span className="text-xs font-bold text-muted-foreground">N</span>
-            <span className="text-xs font-medium text-primary">+{skinEnhancement}</span>
-            <button
-              onClick={() => setSkinEnhancement(Math.max(0, skinEnhancement - 1))}
-              className="w-5 h-5 bg-secondary rounded flex items-center justify-center hover:bg-secondary/80"
-            >
-              <Minus className="w-3 h-3" />
-            </button>
-            <button
-              onClick={() => setSkinEnhancement(Math.min(14, skinEnhancement + 1))}
-              className="w-5 h-5 bg-secondary rounded flex items-center justify-center hover:bg-secondary/80"
-            >
-              <Plus className="w-3 h-3" />
-            </button>
+            <span className="text-xs font-medium text-primary">+12</span>
           </div>
         </div>
 
