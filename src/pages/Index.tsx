@@ -84,7 +84,8 @@ const calculateSlotBonuses = (
     } else if (level === 14) {
       bonuses.luck = 11;
       bonuses.maxArmor = 14; // 9 + 5
-      bonuses.reflect = -1;
+      bonuses.drunkChance = 2;
+      bonuses.reflect = 1;
     }
   }
 
@@ -100,7 +101,7 @@ const calculateSlotBonuses = (
       bonuses.defense = 22;
       bonuses.maxArmor = 14; // 9 + 5
       bonuses.drunkChance = 2;
-      bonuses.reflect = -1;
+      bonuses.reflect = 1;
     }
   }
 
@@ -115,7 +116,7 @@ const calculateSlotBonuses = (
     } else if (level === 14) {
       bonuses.damage = 11;
       bonuses.drunkChance = 2;
-      bonuses.reflect = -1;
+      bonuses.reflect = 1;
     }
   }
 
@@ -132,7 +133,7 @@ const calculateSlotBonuses = (
         bonuses.damage = 12;
         bonuses.maxArmor = 14;
         bonuses.drunkChance = 2;
-        bonuses.reflect = -1;
+        bonuses.reflect = 1;
       }
     } else {
       if (level >= 3 && level <= 12) {
@@ -145,7 +146,7 @@ const calculateSlotBonuses = (
         bonuses.defense = 24;
         bonuses.maxArmor = 14;
         bonuses.drunkChance = 2;
-        bonuses.reflect = -1;
+        bonuses.reflect = 1;
       }
     }
   }
