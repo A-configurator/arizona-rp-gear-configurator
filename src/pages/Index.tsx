@@ -59,22 +59,142 @@ const skins: Skin[] = [
   { id: 10, name: 'Данджи', image: danjiImg, stats: { defense: 2, damage: 2, reflect: 3 } },
 ];
 
-// Combine base stats + skin stats + accessory stats
-const combineTotalStats = (baseStats: AccessoryStats, skinStats: SkinStats | null, accessoryStats: AccessoryStats): AccessoryStats => {
+// Calculate slot bonuses based on level
+// Slot 1 (Head): Luck
+// Slot 2, 5 (Defense): Defense
+// Slot 3, 4 (Attack): Damage
+// Slot 6 (Universal): Damage or Defense based on accessory type
+// Slot 7, 8: No special bonuses from levels
+type AccessoryType = 'attack' | 'defense';
+
+const calculateSlotBonuses = (
+  slot: number, 
+  level: number, 
+  accessoryType: AccessoryType = 'attack'
+): Partial<AccessoryStats> => {
+  const bonuses: Partial<AccessoryStats> = {};
+
+  // Slot 1 - Head (Luck)
+  if (slot === 1) {
+    if (level >= 4 && level <= 12) {
+      bonuses.luck = level - 3; // +1 per level from 4
+    } else if (level === 13) {
+      bonuses.luck = 10;
+      bonuses.maxHp = 4;
+      bonuses.maxArmor = 9;
+    } else if (level === 14) {
+      bonuses.luck = 11;
+      bonuses.maxArmor = 14; // 9 + 5
+      bonuses.reflect = -1;
+    }
+  }
+
+  // Slot 2, 5 - Defense slots
+  if (slot === 2 || slot === 5) {
+    if (level >= 4 && level <= 12) {
+      bonuses.defense = (level - 3) * 2; // +2 per level from 4
+    } else if (level === 13) {
+      bonuses.defense = 20;
+      bonuses.maxHp = 4;
+      bonuses.maxArmor = 9;
+    } else if (level === 14) {
+      bonuses.defense = 22;
+      bonuses.maxArmor = 14; // 9 + 5
+      bonuses.drunkChance = 2;
+      bonuses.reflect = -1;
+    }
+  }
+
+  // Slot 3, 4 - Attack slots
+  if (slot === 3 || slot === 4) {
+    if (level >= 4 && level <= 12) {
+      bonuses.damage = level - 3; // +1 per level from 4
+    } else if (level === 13) {
+      bonuses.damage = 10;
+      bonuses.maxHp = 4;
+      bonuses.maxArmor = 9;
+    } else if (level === 14) {
+      bonuses.damage = 11;
+      bonuses.drunkChance = 2;
+      bonuses.reflect = -1;
+    }
+  }
+
+  // Slot 6 - Universal (attack or defense based on accessory type)
+  if (slot === 6) {
+    if (accessoryType === 'attack') {
+      if (level >= 3 && level <= 12) {
+        bonuses.damage = level - 2; // +1 per level from 3
+      } else if (level === 13) {
+        bonuses.damage = 11;
+        bonuses.maxHp = 4;
+        bonuses.maxArmor = 9;
+      } else if (level === 14) {
+        bonuses.damage = 12;
+        bonuses.maxArmor = 14;
+        bonuses.drunkChance = 2;
+        bonuses.reflect = -1;
+      }
+    } else {
+      if (level >= 3 && level <= 12) {
+        bonuses.defense = (level - 2) * 2; // +2 per level from 3
+      } else if (level === 13) {
+        bonuses.defense = 22;
+        bonuses.maxHp = 4;
+        bonuses.maxArmor = 9;
+      } else if (level === 14) {
+        bonuses.defense = 24;
+        bonuses.maxArmor = 14;
+        bonuses.drunkChance = 2;
+        bonuses.reflect = -1;
+      }
+    }
+  }
+
+  return bonuses;
+};
+
+// Calculate total bonuses from all slot enhancements
+const calculateEnhancementBonuses = (enhancements: number[]): AccessoryStats => {
+  const total: AccessoryStats = {
+    defense: 0, regen: 0, damage: 0, luck: 0, maxHp: 0, maxArmor: 0,
+    stunChance: 0, drunkChance: 0, antiStun: 0, reflect: 0, block: 0, fireRate: 0, recoil: 0
+  };
+
+  enhancements.forEach((level, index) => {
+    const slot = index + 1;
+    // For slot 6, default to 'attack' type - can be made dynamic later
+    const bonuses = calculateSlotBonuses(slot, level, 'attack');
+    
+    (Object.keys(bonuses) as (keyof AccessoryStats)[]).forEach((key) => {
+      total[key] += bonuses[key] || 0;
+    });
+  });
+
+  return total;
+};
+
+// Combine base stats + skin stats + accessory stats + enhancement bonuses
+const combineTotalStats = (
+  baseStats: AccessoryStats, 
+  skinStats: SkinStats | null, 
+  accessoryStats: AccessoryStats,
+  enhancementBonuses: AccessoryStats
+): AccessoryStats => {
   return {
-    defense: baseStats.defense + (skinStats?.defense || 0) + accessoryStats.defense,
-    regen: baseStats.regen + accessoryStats.regen,
-    damage: baseStats.damage + (skinStats?.damage || 0) + accessoryStats.damage,
-    luck: baseStats.luck + accessoryStats.luck,
-    maxHp: baseStats.maxHp + accessoryStats.maxHp,
-    maxArmor: baseStats.maxArmor + (skinStats?.maxArmor || 0) + accessoryStats.maxArmor,
-    stunChance: baseStats.stunChance + accessoryStats.stunChance,
-    drunkChance: baseStats.drunkChance + accessoryStats.drunkChance,
-    antiStun: baseStats.antiStun + accessoryStats.antiStun,
-    reflect: baseStats.reflect + (skinStats?.reflect || 0) + accessoryStats.reflect,
-    block: baseStats.block + accessoryStats.block,
-    fireRate: baseStats.fireRate + accessoryStats.fireRate,
-    recoil: baseStats.recoil + accessoryStats.recoil,
+    defense: baseStats.defense + (skinStats?.defense || 0) + accessoryStats.defense + enhancementBonuses.defense,
+    regen: baseStats.regen + accessoryStats.regen + enhancementBonuses.regen,
+    damage: baseStats.damage + (skinStats?.damage || 0) + accessoryStats.damage + enhancementBonuses.damage,
+    luck: baseStats.luck + accessoryStats.luck + enhancementBonuses.luck,
+    maxHp: baseStats.maxHp + accessoryStats.maxHp + enhancementBonuses.maxHp,
+    maxArmor: baseStats.maxArmor + (skinStats?.maxArmor || 0) + accessoryStats.maxArmor + enhancementBonuses.maxArmor,
+    stunChance: baseStats.stunChance + accessoryStats.stunChance + enhancementBonuses.stunChance,
+    drunkChance: baseStats.drunkChance + accessoryStats.drunkChance + enhancementBonuses.drunkChance,
+    antiStun: baseStats.antiStun + accessoryStats.antiStun + enhancementBonuses.antiStun,
+    reflect: baseStats.reflect + (skinStats?.reflect || 0) + accessoryStats.reflect + enhancementBonuses.reflect,
+    block: baseStats.block + accessoryStats.block + enhancementBonuses.block,
+    fireRate: baseStats.fireRate + accessoryStats.fireRate + enhancementBonuses.fireRate,
+    recoil: baseStats.recoil + accessoryStats.recoil + enhancementBonuses.recoil,
   };
 };
 
@@ -343,7 +463,8 @@ const Index = () => {
   const [showSkinModal, setShowSkinModal] = useState(false);
 
   const accessoryStats = calculateTotalStats(equippedAccessories);
-  const totalStats = combineTotalStats(BASE_STATS, selectedSkin?.stats || null, accessoryStats);
+  const enhancementBonuses = useMemo(() => calculateEnhancementBonuses(enhancements), [enhancements]);
+  const totalStats = combineTotalStats(BASE_STATS, selectedSkin?.stats || null, accessoryStats, enhancementBonuses);
 
   const handleEquip = useCallback((accessory: Accessory) => {
     setEquippedAccessories((prev) => {
