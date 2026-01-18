@@ -914,9 +914,16 @@ const EquipmentSlot = ({ slotNumber, equipped, enhancement, onSlotClick, onEnhan
       {/* Enhancement controls + Patch button */}
       <div className="flex items-center justify-center gap-1">
         <button
-          onClick={(e) => { e.stopPropagation(); onPatchClick?.(); }}
-          className={`text-[9px] font-bold cursor-pointer hover:text-orange-300 transition-colors ${patch ? 'text-orange-400' : 'text-muted-foreground'}`}
-          title="Выбрать нашивку"
+          onClick={(e) => { e.stopPropagation(); if (equipped) onPatchClick?.(); }}
+          disabled={!equipped}
+          className={`text-[9px] font-bold transition-colors ${
+            !equipped 
+              ? 'text-muted-foreground/30 cursor-not-allowed' 
+              : patch 
+                ? 'text-orange-400 cursor-pointer hover:text-orange-300' 
+                : 'text-muted-foreground cursor-pointer hover:text-orange-300'
+          }`}
+          title={equipped ? "Выбрать нашивку" : "Сначала выберите аксессуар"}
         >
           наш.
         </button>
