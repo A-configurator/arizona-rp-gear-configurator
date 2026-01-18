@@ -1,6 +1,7 @@
 import { useState, useCallback, useMemo } from 'react';
 import { Accessory, accessories, calculateTotalStats, SLOT_NAMES, AccessoryStats, AccessoryType, getEmptyStats } from '@/data/accessories';
-import { X, Minus, Plus, Search } from 'lucide-react';
+import { X, Minus, Plus, Search, Shirt } from 'lucide-react';
+import { Patch, getPatchesForSlot, calculatePatchBonuses } from '@/data/patches';
 
 // Skin images
 import spaceFarmerImg from '@/assets/skins/space-farmer.png';
@@ -215,38 +216,40 @@ const calculateYellowStats = (equippedAccessories: (Accessory | null)[]): Access
   return total;
 };
 
-// Combine base stats + skin stats + accessory stats + enhancement bonuses + yellow stats
+// Combine base stats + skin stats + accessory stats + enhancement bonuses + yellow stats + patch bonuses
 const combineTotalStats = (
   baseStats: AccessoryStats, 
   skinStats: SkinStats | null, 
   accessoryStats: AccessoryStats,
   enhancementBonuses: AccessoryStats,
-  yellowStats: AccessoryStats
+  yellowStats: AccessoryStats,
+  patchBonuses: AccessoryStats
 ): AccessoryStats => {
   const rawDefense =
     baseStats.defense +
     (skinStats?.defense || 0) +
     accessoryStats.defense +
     enhancementBonuses.defense +
-    yellowStats.defense;
+    yellowStats.defense +
+    patchBonuses.defense;
 
   // Кап защиты: максимум 90% (как «Защита: -90% урона»)
   const cappedDefense = Math.min(Math.max(rawDefense, 0), 90);
 
   return {
     defense: cappedDefense,
-    regen: baseStats.regen + accessoryStats.regen + enhancementBonuses.regen + yellowStats.regen,
-    damage: baseStats.damage + (skinStats?.damage || 0) + accessoryStats.damage + enhancementBonuses.damage + yellowStats.damage,
-    luck: baseStats.luck + accessoryStats.luck + enhancementBonuses.luck + yellowStats.luck,
-    maxHp: baseStats.maxHp + accessoryStats.maxHp + enhancementBonuses.maxHp + yellowStats.maxHp,
-    maxArmor: baseStats.maxArmor + (skinStats?.maxArmor || 0) + accessoryStats.maxArmor + enhancementBonuses.maxArmor + yellowStats.maxArmor,
-    stunChance: baseStats.stunChance + accessoryStats.stunChance + enhancementBonuses.stunChance + yellowStats.stunChance,
-    drunkChance: baseStats.drunkChance + accessoryStats.drunkChance + enhancementBonuses.drunkChance + yellowStats.drunkChance,
-    antiStun: baseStats.antiStun + accessoryStats.antiStun + enhancementBonuses.antiStun + yellowStats.antiStun,
-    reflect: baseStats.reflect + (skinStats?.reflect || 0) + accessoryStats.reflect + enhancementBonuses.reflect + yellowStats.reflect,
-    block: baseStats.block + accessoryStats.block + enhancementBonuses.block + yellowStats.block,
-    fireRate: baseStats.fireRate + accessoryStats.fireRate + enhancementBonuses.fireRate + yellowStats.fireRate,
-    recoil: baseStats.recoil + accessoryStats.recoil + enhancementBonuses.recoil + yellowStats.recoil,
+    regen: baseStats.regen + accessoryStats.regen + enhancementBonuses.regen + yellowStats.regen + patchBonuses.regen,
+    damage: baseStats.damage + (skinStats?.damage || 0) + accessoryStats.damage + enhancementBonuses.damage + yellowStats.damage + patchBonuses.damage,
+    luck: baseStats.luck + accessoryStats.luck + enhancementBonuses.luck + yellowStats.luck + patchBonuses.luck,
+    maxHp: baseStats.maxHp + accessoryStats.maxHp + enhancementBonuses.maxHp + yellowStats.maxHp + patchBonuses.maxHp,
+    maxArmor: baseStats.maxArmor + (skinStats?.maxArmor || 0) + accessoryStats.maxArmor + enhancementBonuses.maxArmor + yellowStats.maxArmor + patchBonuses.maxArmor,
+    stunChance: baseStats.stunChance + accessoryStats.stunChance + enhancementBonuses.stunChance + yellowStats.stunChance + patchBonuses.stunChance,
+    drunkChance: baseStats.drunkChance + accessoryStats.drunkChance + enhancementBonuses.drunkChance + yellowStats.drunkChance + patchBonuses.drunkChance,
+    antiStun: baseStats.antiStun + accessoryStats.antiStun + enhancementBonuses.antiStun + yellowStats.antiStun + patchBonuses.antiStun,
+    reflect: baseStats.reflect + (skinStats?.reflect || 0) + accessoryStats.reflect + enhancementBonuses.reflect + yellowStats.reflect + patchBonuses.reflect,
+    block: baseStats.block + accessoryStats.block + enhancementBonuses.block + yellowStats.block + patchBonuses.block,
+    fireRate: baseStats.fireRate + accessoryStats.fireRate + enhancementBonuses.fireRate + yellowStats.fireRate + patchBonuses.fireRate,
+    recoil: baseStats.recoil + accessoryStats.recoil + enhancementBonuses.recoil + yellowStats.recoil + patchBonuses.recoil,
   };
 };
 
@@ -749,6 +752,105 @@ const StatsDisplay = ({ stats }: { stats: AccessoryStats }) => {
   );
 };
 
+// Patch selection modal
+interface PatchModalProps {
+  slotNumber: number;
+  currentPatch: Patch | null;
+  onSelect: (patch: Patch) => void;
+  onRemove: () => void;
+  onClose: () => void;
+}
+
+const PatchModal = ({ slotNumber, currentPatch, onSelect, onRemove, onClose }: PatchModalProps) => {
+  const availablePatches = getPatchesForSlot(slotNumber);
+
+  const statLabels: Record<string, string> = {
+    defense: 'Защита',
+    damage: 'Урон',
+    luck: 'Удача',
+    regen: 'Регенерация',
+    maxHp: 'Макс. HP',
+    maxArmor: 'Макс. Брони',
+    stunChance: 'Шанс оглуш.',
+    drunkChance: 'Шанс опьянения',
+    antiStun: 'Анти-оглуш.',
+    reflect: 'Отражение',
+    block: 'Блок',
+    fireRate: 'Скорострельность',
+    recoil: 'Отдача',
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/80 backdrop-blur-sm" onClick={onClose}>
+      <div
+        className="w-full max-w-md max-h-[80vh] bg-card border border-border rounded-xl shadow-2xl flex flex-col overflow-hidden"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Header */}
+        <div className="flex items-center justify-between p-4 border-b border-border">
+          <h2 className="text-lg font-bold text-orange-400">ВЫБОР НАШИВКИ</h2>
+          <button onClick={onClose} className="w-8 h-8 flex items-center justify-center rounded-full bg-secondary hover:bg-secondary/80 transition-colors">
+            <X className="w-4 h-4" />
+          </button>
+        </div>
+
+        {/* Remove button if patch is selected */}
+        {currentPatch && (
+          <div className="p-3 border-b border-border">
+            <button
+              onClick={onRemove}
+              className="w-full py-2 px-4 bg-destructive/20 text-destructive border border-destructive/30 rounded-lg text-sm font-medium hover:bg-destructive/30 transition-colors"
+            >
+              Убрать нашивку
+            </button>
+          </div>
+        )}
+        
+        {/* Patches list */}
+        <div className="flex-1 overflow-y-auto p-3 arz-scrollbar">
+          <div className="grid grid-cols-2 gap-2">
+            {availablePatches.map((patch) => {
+              const statsToShow = Object.entries(patch.stats).filter(([_, value]) => value !== 0);
+              return (
+                <div
+                  key={patch.id}
+                  onClick={() => onSelect(patch)}
+                  className={`
+                    p-2 bg-secondary rounded-lg cursor-pointer flex flex-col items-center gap-1
+                    border-2 transition-all duration-200
+                    ${currentPatch?.id === patch.id ? 'border-orange-400 arz-glow' : 'border-border hover:border-orange-400/50'}
+                    ${patch.isLegendary ? 'bg-gradient-to-br from-yellow-900/30 to-orange-900/30' : ''}
+                  `}
+                >
+                  <img src={patch.image} alt={patch.name} className="w-14 h-14 object-contain" />
+                  <div className={`text-[10px] font-medium truncate w-full text-center ${patch.isLegendary ? 'text-yellow-400' : ''}`}>
+                    {patch.name}
+                  </div>
+                  {statsToShow.length > 0 && (
+                    <div className="text-[8px] text-center leading-tight space-y-0.5 w-full">
+                      {statsToShow.map(([key, value]) => (
+                        <div key={key}>
+                          <span className="text-orange-400">{statLabels[key] || key}: </span>
+                          <span className="text-foreground">+{value}</span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Footer */}
+        <div className="p-3 border-t border-border text-center text-xs text-muted-foreground">
+          {slotNumber <= 3 && 'Доступна легендарная нашивка для этого слота!'}
+        </div>
+      </div>
+    </div>
+  );
+};
+
 // Equipment slot component
 interface EquipmentSlotProps {
   slotNumber: number;
@@ -760,9 +862,11 @@ interface EquipmentSlotProps {
   onSlot6TypeChange?: (type: AccessoryType) => void;
   yellowStatsSource?: Accessory | null; // Источник жёлтых характеристик (аксессуар)
   baseStatsSource?: Accessory | null; // Источник базовых характеристик
+  patch?: Patch | null; // Нашивка
+  onPatchClick?: () => void; // Клик на "наш."
 }
 
-const EquipmentSlot = ({ slotNumber, equipped, enhancement, onSlotClick, onEnhance, slot6Type, onSlot6TypeChange, yellowStatsSource, baseStatsSource }: EquipmentSlotProps) => {
+const EquipmentSlot = ({ slotNumber, equipped, enhancement, onSlotClick, onEnhance, slot6Type, onSlot6TypeChange, yellowStatsSource, baseStatsSource, patch, onPatchClick }: EquipmentSlotProps) => {
   return (
     <div className="flex flex-col">
       <div
@@ -798,11 +902,24 @@ const EquipmentSlot = ({ slotNumber, equipped, enhancement, onSlotClick, onEnhan
             <img src={yellowStatsSource.imageUrl} alt={yellowStatsSource.name} className="w-full h-full object-contain" />
           </div>
         )}
+
+        {/* Patch icon - bottom LEFT corner */}
+        {patch && (
+          <div className="absolute -bottom-2 -left-2 w-8 h-8 rounded-full border-2 border-orange-400 overflow-hidden bg-background">
+            <img src={patch.image} alt={patch.name} className="w-full h-full object-contain" />
+          </div>
+        )}
       </div>
       
-      {/* Enhancement controls */}
+      {/* Enhancement controls + Patch button */}
       <div className="flex items-center justify-center gap-1">
-        <span className="text-xs font-bold text-muted-foreground">N</span>
+        <button
+          onClick={(e) => { e.stopPropagation(); onPatchClick?.(); }}
+          className={`text-[9px] font-bold cursor-pointer hover:text-orange-300 transition-colors ${patch ? 'text-orange-400' : 'text-muted-foreground'}`}
+          title="Выбрать нашивку"
+        >
+          наш.
+        </button>
         <span className="text-xs font-medium text-primary">+{enhancement}</span>
         <button
           onClick={(e) => { e.stopPropagation(); onEnhance(-1); }}
@@ -834,11 +951,14 @@ const Index = () => {
   const [showBaseStatsModal, setShowBaseStatsModal] = useState(false);
   const [selectedYellowStatsSource, setSelectedYellowStatsSource] = useState<(Accessory | null)[]>(Array(8).fill(null)); // Источник жёлтых
   const [selectedBaseStatsSource, setSelectedBaseStatsSource] = useState<(Accessory | null)[]>(Array(8).fill(null)); // Источник базовых
+  const [selectedPatches, setSelectedPatches] = useState<(Patch | null)[]>(Array(8).fill(null)); // Нашивки для каждого слота
+  const [showPatchModal, setShowPatchModal] = useState<number | null>(null); // Номер слота для выбора нашивки
 
   const accessoryStats = calculateTotalStats(equippedAccessories);
   const yellowStats = useMemo(() => calculateYellowStats(equippedAccessories), [equippedAccessories]);
   const enhancementBonuses = useMemo(() => calculateEnhancementBonuses(enhancements, equippedAccessories, slot6Type), [enhancements, equippedAccessories, slot6Type]);
-  const totalStats = combineTotalStats(BASE_STATS, selectedSkin?.stats || null, accessoryStats, enhancementBonuses, yellowStats);
+  const patchBonuses = useMemo(() => calculatePatchBonuses(selectedPatches), [selectedPatches]);
+  const totalStats = combineTotalStats(BASE_STATS, selectedSkin?.stats || null, accessoryStats, enhancementBonuses, yellowStats, patchBonuses);
 
   // DEBUG: Отладка статов
   console.log('=== DEBUG STATS ===');
@@ -1049,6 +1169,8 @@ const Index = () => {
             onSlot6TypeChange={setSlot6Type}
             yellowStatsSource={selectedYellowStatsSource[slotNum - 1]}
             baseStatsSource={selectedBaseStatsSource[slotNum - 1]}
+            patch={selectedPatches[slotNum - 1]}
+            onPatchClick={() => setShowPatchModal(slotNum)}
           />
         ))}
       </div>
@@ -1092,6 +1214,31 @@ const Index = () => {
             setPendingAccessory(null);
             setShowBaseStatsModal(false);
           }}
+        />
+      )}
+
+      {/* Patch selection modal */}
+      {showPatchModal !== null && (
+        <PatchModal
+          slotNumber={showPatchModal}
+          currentPatch={selectedPatches[showPatchModal - 1]}
+          onSelect={(patch) => {
+            setSelectedPatches((prev) => {
+              const newPatches = [...prev];
+              newPatches[showPatchModal - 1] = patch;
+              return newPatches;
+            });
+            setShowPatchModal(null);
+          }}
+          onRemove={() => {
+            setSelectedPatches((prev) => {
+              const newPatches = [...prev];
+              newPatches[showPatchModal - 1] = null;
+              return newPatches;
+            });
+            setShowPatchModal(null);
+          }}
+          onClose={() => setShowPatchModal(null)}
         />
       )}
 
