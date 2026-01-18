@@ -2,7 +2,6 @@ import { useState, useCallback, useMemo } from 'react';
 import { Accessory, accessories, calculateTotalStats, SLOT_NAMES, AccessoryStats, AccessoryType, getEmptyStats } from '@/data/accessories';
 import { X, Minus, Plus, Search, Shirt, Send } from 'lucide-react';
 import { Patch, getPatchesForSlot, calculatePatchBonuses } from '@/data/patches';
-import { AccessoryGrid } from '@/components/AccessoryGrid';
 import logoImg from '@/assets/logo.png';
 
 // Skin images
@@ -1149,67 +1148,49 @@ const Index = () => {
         </a>
       </header>
 
-      {/* Main content: 3-column layout on desktop, stacked on mobile */}
-      <div className="flex flex-col lg:flex-row gap-4">
-        {/* Left column: Character + Stats + Slots */}
-        <div className="lg:w-1/2 xl:w-2/5">
-          {/* Character + Stats row */}
-          <div className="flex gap-4 mb-6">
-            {/* Character image - clickable for skin selection */}
-            <div className="flex flex-col items-center">
-              <div
-                onClick={() => setShowSkinModal(true)}
-                className="w-32 h-48 bg-secondary/30 rounded-lg flex items-center justify-center flex-shrink-0 cursor-pointer hover:bg-secondary/50 transition-colors border-2 border-transparent hover:border-primary/30 overflow-hidden"
-              >
-                {selectedSkin ? (
-                  <img src={selectedSkin.image} alt={selectedSkin.name} className="w-full h-full object-cover object-top" />
-                ) : (
-                  <div className="text-center p-2">
-                    <div className="text-xs text-muted-foreground leading-tight">Любой дефолт скин</div>
-                  </div>
-                )}
+      {/* Main content: Character + Stats */}
+      <div className="flex gap-4 mb-6">
+      {/* Character image - clickable for skin selection */}
+        <div className="flex flex-col items-center">
+          <div
+            onClick={() => setShowSkinModal(true)}
+            className="w-32 h-48 bg-secondary/30 rounded-lg flex items-center justify-center flex-shrink-0 cursor-pointer hover:bg-secondary/50 transition-colors border-2 border-transparent hover:border-primary/30 overflow-hidden"
+          >
+            {selectedSkin ? (
+              <img src={selectedSkin.image} alt={selectedSkin.name} className="w-full h-full object-cover object-top" />
+            ) : (
+              <div className="text-center p-2">
+                <div className="text-xs text-muted-foreground leading-tight">Любой дефолт скин</div>
               </div>
-              <div className="mt-1 text-sm font-bold text-primary">+12</div>
-            </div>
-
-            {/* Stats */}
-            <div className="flex-1">
-              <StatsDisplay stats={totalStats} />
-            </div>
+            )}
           </div>
-
-          {/* Equipment slots grid */}
-          <div className="grid grid-cols-3 gap-3 max-w-sm mx-auto lg:mx-0">
-          {[1, 2, 3, 4, 5, 6, 7, 8].map((slotNum) => (
-            <EquipmentSlot
-              key={slotNum}
-              slotNumber={slotNum}
-              equipped={equippedAccessories[slotNum - 1]}
-              enhancement={enhancements[slotNum - 1]}
-              onSlotClick={() => setSelectedSlot(slotNum)}
-              onEnhance={(delta) => handleEnhance(slotNum - 1, delta)}
-              slot6Type={slot6Type}
-              onSlot6TypeChange={setSlot6Type}
-              yellowStatsSource={selectedYellowStatsSource[slotNum - 1]}
-              baseStatsSource={selectedBaseStatsSource[slotNum - 1]}
-              patch={selectedPatches[slotNum - 1]}
-              onPatchClick={() => setShowPatchModal(slotNum)}
-            />
-          ))}
-          </div>
+          <div className="mt-1 text-sm font-bold text-primary">+12</div>
         </div>
 
-        {/* Right column: Accessories grid (desktop only inline, mobile below) */}
-        <div className="lg:flex-1 lg:max-h-[calc(100vh-120px)]">
-          <AccessoryGrid
-            equippedAccessories={equippedAccessories}
-            onAccessoryClick={(accessory) => {
-              // Find the slot for this accessory and equip it
-              const slotIndex = accessory.slot - 1;
-              handleSelectAccessory(accessory);
-            }}
+        {/* Stats */}
+        <div className="flex-1">
+          <StatsDisplay stats={totalStats} />
+        </div>
+      </div>
+
+      {/* Equipment slots grid */}
+      <div className="grid grid-cols-3 gap-3 max-w-sm mx-auto">
+        {[1, 2, 3, 4, 5, 6, 7, 8].map((slotNum) => (
+          <EquipmentSlot
+            key={slotNum}
+            slotNumber={slotNum}
+            equipped={equippedAccessories[slotNum - 1]}
+            enhancement={enhancements[slotNum - 1]}
+            onSlotClick={() => setSelectedSlot(slotNum)}
+            onEnhance={(delta) => handleEnhance(slotNum - 1, delta)}
+            slot6Type={slot6Type}
+            onSlot6TypeChange={setSlot6Type}
+            yellowStatsSource={selectedYellowStatsSource[slotNum - 1]}
+            baseStatsSource={selectedBaseStatsSource[slotNum - 1]}
+            patch={selectedPatches[slotNum - 1]}
+            onPatchClick={() => setShowPatchModal(slotNum)}
           />
-        </div>
+        ))}
       </div>
 
       {/* Slot selection modal */}
