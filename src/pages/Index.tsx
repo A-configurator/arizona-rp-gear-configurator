@@ -1,7 +1,8 @@
 import { useState, useCallback, useMemo } from 'react';
 import { Accessory, accessories, calculateTotalStats, SLOT_NAMES, AccessoryStats, AccessoryType, getEmptyStats } from '@/data/accessories';
-import { X, Minus, Plus, Search, Shirt } from 'lucide-react';
+import { X, Minus, Plus, Search, Shirt, Send } from 'lucide-react';
 import { Patch, getPatchesForSlot, calculatePatchBonuses } from '@/data/patches';
+import logoImg from '@/assets/logo.png';
 
 // Skin images
 import spaceFarmerImg from '@/assets/skins/space-farmer.png';
@@ -1126,16 +1127,26 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-background text-foreground p-4">
       {/* Header */}
-      <div className="text-center text-xs text-muted-foreground mb-4">
-        © Arizona RP Configurator, 2025
-      </div>
+      <header className="flex items-center justify-between mb-4">
+        {/* Logo + Title */}
+        <div className="flex items-center gap-2">
+          <img src={logoImg} alt="A-Configurator Logo" className="w-8 h-8" />
+          <span className="text-accent font-bold text-xl">
+            <span className="text-2xl">A</span>-Configurator
+          </span>
+        </div>
 
-      {/* Title */}
-      <div className="text-center mb-4">
-        <span className="text-accent font-bold text-xl">
-          <span className="text-2xl">А</span>ксики
-        </span>
-      </div>
+        {/* Telegram link */}
+        <a 
+          href="https://t.me/aconfigurator" 
+          target="_blank" 
+          rel="noopener noreferrer"
+          className="flex items-center gap-2 text-xs text-muted-foreground hover:text-accent transition-colors"
+        >
+          <Send className="w-4 h-4" />
+          <span className="hidden sm:inline">Новости и предложения</span>
+        </a>
+      </header>
 
       {/* Main content: Character + Stats */}
       <div className="flex gap-4 mb-6">
