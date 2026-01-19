@@ -1192,6 +1192,7 @@ const Index = () => {
             onPatchClick={() => setShowPatchModal(slotNum)}
           />
         ))}
+          </div>
         </div>
       </div>
 
