@@ -1168,9 +1168,14 @@ const Index = () => {
         </div>
       </div>
 
-      {/* Equipment slots + Stats side by side */}
+      {/* Stats + Equipment slots side by side */}
       <div className="flex gap-6 items-start">
-        {/* Equipment slots grid - слева */}
+        {/* Stats - слева */}
+        <div className="flex-1">
+          <StatsDisplay stats={totalStats} />
+        </div>
+
+        {/* Equipment slots grid - справа */}
         <div className="grid grid-cols-3 gap-3 flex-shrink-0">
         {[1, 2, 3, 4, 5, 6, 7, 8].map((slotNum) => (
           <EquipmentSlot
@@ -1188,11 +1193,6 @@ const Index = () => {
             onPatchClick={() => setShowPatchModal(slotNum)}
           />
         ))}
-        </div>
-
-        {/* Stats - справа */}
-        <div className="flex-1">
-          <StatsDisplay stats={totalStats} />
         </div>
       </div>
 
