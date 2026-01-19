@@ -1148,9 +1148,9 @@ const Index = () => {
         </a>
       </header>
 
-      {/* Main content: Character + Stats */}
-      <div className="flex gap-4 mb-6">
-      {/* Character image - clickable for skin selection */}
+      {/* Main content: Character image */}
+      <div className="flex justify-center mb-6">
+        {/* Character image - clickable for skin selection */}
         <div className="flex flex-col items-center">
           <div
             onClick={() => setShowSkinModal(true)}
@@ -1166,15 +1166,12 @@ const Index = () => {
           </div>
           <div className="mt-1 text-sm font-bold text-primary">+12</div>
         </div>
-
-        {/* Stats */}
-        <div className="flex-1">
-          <StatsDisplay stats={totalStats} />
-        </div>
       </div>
 
-      {/* Equipment slots grid */}
-      <div className="grid grid-cols-3 gap-3 max-w-sm mx-auto">
+      {/* Equipment slots + Stats side by side */}
+      <div className="flex gap-6 items-start">
+        {/* Equipment slots grid - слева */}
+        <div className="grid grid-cols-3 gap-3 flex-shrink-0">
         {[1, 2, 3, 4, 5, 6, 7, 8].map((slotNum) => (
           <EquipmentSlot
             key={slotNum}
@@ -1191,6 +1188,12 @@ const Index = () => {
             onPatchClick={() => setShowPatchModal(slotNum)}
           />
         ))}
+        </div>
+
+        {/* Stats - справа */}
+        <div className="flex-1">
+          <StatsDisplay stats={totalStats} />
+        </div>
       </div>
 
       {/* Slot selection modal */}
