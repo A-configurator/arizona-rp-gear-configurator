@@ -1148,13 +1148,13 @@ const Index = () => {
         </a>
       </header>
 
-      {/* Main content: Character image */}
-      <div className="flex justify-center mb-6">
-        {/* Character image - clickable for skin selection */}
-        <div className="flex flex-col items-center">
+      {/* Main content: Skin left, Stats + Slots centered right */}
+      <div className="flex gap-6 items-start">
+        {/* Character image - слева */}
+        <div className="flex flex-col items-center flex-shrink-0">
           <div
             onClick={() => setShowSkinModal(true)}
-            className="w-32 h-48 bg-secondary/30 rounded-lg flex items-center justify-center flex-shrink-0 cursor-pointer hover:bg-secondary/50 transition-colors border-2 border-transparent hover:border-primary/30 overflow-hidden"
+            className="w-32 h-48 bg-secondary/30 rounded-lg flex items-center justify-center cursor-pointer hover:bg-secondary/50 transition-colors border-2 border-transparent hover:border-primary/30 overflow-hidden"
           >
             {selectedSkin ? (
               <img src={selectedSkin.image} alt={selectedSkin.name} className="w-full h-full object-cover object-top" />
@@ -1166,17 +1166,16 @@ const Index = () => {
           </div>
           <div className="mt-1 text-sm font-bold text-primary">+12</div>
         </div>
-      </div>
 
-      {/* Stats + Equipment slots side by side */}
-      <div className="flex gap-6 items-start">
-        {/* Stats - слева */}
-        <div className="flex-1">
-          <StatsDisplay stats={totalStats} />
-        </div>
+        {/* Stats + Equipment slots - справа, отцентрованы */}
+        <div className="flex gap-6 items-start flex-1 justify-center">
+          {/* Stats */}
+          <div className="flex-shrink-0">
+            <StatsDisplay stats={totalStats} />
+          </div>
 
-        {/* Equipment slots grid - справа */}
-        <div className="grid grid-cols-3 gap-3 flex-shrink-0">
+          {/* Equipment slots grid */}
+          <div className="grid grid-cols-3 gap-3 flex-shrink-0">
         {[1, 2, 3, 4, 5, 6, 7, 8].map((slotNum) => (
           <EquipmentSlot
             key={slotNum}
