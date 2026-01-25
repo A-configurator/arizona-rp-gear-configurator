@@ -221,6 +221,12 @@ import vest6Img from '@/assets/slot7-vest/vest-6.png';
 import vest7Img from '@/assets/slot7-vest/vest-7.png';
 import vest8Img from '@/assets/slot7-vest/vest-8.png';
 
+// Импорты чемоданов слота 8
+import energySuitcaseImg from '@/assets/slot8-suitcase/energy-suitcase.png';
+import devilSuitcaseImg from '@/assets/slot8-suitcase/devil-suitcase.png';
+import labubuSuitcaseImg from '@/assets/slot8-suitcase/labubu-suitcase.png';
+import crimeSuitcaseImg from '@/assets/slot8-suitcase/crime-suitcase.png';
+
 // Аксессуары Arizona RP
 export const accessories: Accessory[] = [
   // ===== СЛОТ 1 - ГОЛОВА =====
@@ -1449,6 +1455,51 @@ export const accessories: Accessory[] = [
     stats: { ...emptyStats },
     yellowStats: { ...emptyStats, luck: 1, maxHp: 5 },
     imageUrl: vest8Img,
+    isYellowOnly: true,
+  },
+  // ===== СЛОТ 8 - ЧЕМОДАН =====
+  {
+    id: 901,
+    name: 'Энергетический чемодан',
+    slot: 8,
+    slotName: 'Чемодан',
+    description: 'Энергетический чемодан с мощными характеристиками',
+    rarity: 'epic',
+    stats: { ...emptyStats, damage: 3, stunChance: 13, antiStun: 4 },
+    imageUrl: energySuitcaseImg,
+  },
+  {
+    id: 902,
+    name: 'Дьявольский чемодан',
+    slot: 8,
+    slotName: 'Чемодан',
+    description: 'Дьявольский чемодан',
+    rarity: 'rare',
+    stats: { ...emptyStats, stunChance: 6 },
+    imageUrl: devilSuitcaseImg,
+  },
+  {
+    id: 903,
+    name: 'Чемодан Лабубу',
+    slot: 8,
+    slotName: 'Чемодан',
+    description: 'Чемодан с персонажем Лабубу',
+    rarity: 'rare',
+    stats: { ...emptyStats },
+    yellowStats: { ...emptyStats, defense: 2, damage: 2 },
+    imageUrl: labubuSuitcaseImg,
+    isYellowOnly: true,
+  },
+  {
+    id: 904,
+    name: 'Чемодан криминала',
+    slot: 8,
+    slotName: 'Чемодан',
+    description: 'Чемодан криминала с мощными характеристиками',
+    rarity: 'legendary',
+    stats: { ...emptyStats },
+    yellowStats: { ...emptyStats, maxHp: 15, maxArmor: 15, defense: 2, damage: 6, fireRate: 10, recoil: 10 },
+    imageUrl: crimeSuitcaseImg,
     isYellowOnly: true,
   },
 ];

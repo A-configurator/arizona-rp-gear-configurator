@@ -191,6 +191,9 @@ const calculateEnhancementBonuses = (
     if (!equippedAccessories[index]) return;
     
     const slot = index + 1;
+    // Слот 8 (чемоданы) не может иметь заточки
+    if (slot === 8) return;
+    
     // Use slot 6 type from accessory or state
     const accessoryType = slot === 6 
       ? (equippedAccessories[index]?.accessoryType || slot6Type)
@@ -623,8 +626,17 @@ interface BaseStatsModalProps {
 const BaseStatsModal = ({ slotNumber, accessories: allAccessories, excludeId, onSelect, onSkip, onClose }: BaseStatsModalProps) => {
   const [searchTerm, setSearchTerm] = useState('');
   
-  // Фильтруем аксессуары этого слота, исключая себя и жёлтые аксессуары (у них нет базовых статов)
-  const baseAccessories = allAccessories.filter(acc => acc.slot === slotNumber && acc.id !== excludeId && !acc.isYellowOnly);
+  // Для бронежилетов (слот 7): если текущий аксессуар с желтыми статами, показываем аксессуары с обычными статами
+  // Для остальных слотов: исключаем жёлтые аксессуары (у них нет базовых статов)
+  const baseAccessories = allAccessories.filter(acc => {
+    if (acc.slot !== slotNumber || acc.id === excludeId) return false;
+    if (slotNumber === 7) {
+      // Для бронежилетов: показываем аксессуары с обычными статами (не isYellowOnly)
+      return !acc.isYellowOnly;
+    }
+    // Для остальных слотов: исключаем жёлтые аксессуары
+    return !acc.isYellowOnly;
+  });
 
   const filteredOptions = useMemo(() => {
     if (!searchTerm.trim()) return baseAccessories;
@@ -940,19 +952,25 @@ const EquipmentSlot = ({ slotNumber, equipped, enhancement, onSlotClick, onEnhan
         >
           наш.
         </button>
-        <span className="text-xs font-medium text-primary">+{enhancement}</span>
-        <button
-          onClick={(e) => { e.stopPropagation(); onEnhance(-1); }}
-          className="w-5 h-5 bg-secondary rounded flex items-center justify-center hover:bg-secondary/80"
-        >
-          <Minus className="w-3 h-3" />
-        </button>
-        <button
-          onClick={(e) => { e.stopPropagation(); onEnhance(1); }}
-          className="w-5 h-5 bg-secondary rounded flex items-center justify-center hover:bg-secondary/80"
-        >
-          <Plus className="w-3 h-3" />
-        </button>
+        {slotNumber === 8 ? (
+          <span className="text-xs font-medium text-muted-foreground">Нет заточки</span>
+        ) : (
+          <>
+            <span className="text-xs font-medium text-primary">+{enhancement}</span>
+            <button
+              onClick={(e) => { e.stopPropagation(); onEnhance(-1); }}
+              className="w-5 h-5 bg-secondary rounded flex items-center justify-center hover:bg-secondary/80"
+            >
+              <Minus className="w-3 h-3" />
+            </button>
+            <button
+              onClick={(e) => { e.stopPropagation(); onEnhance(1); }}
+              className="w-5 h-5 bg-secondary rounded flex items-center justify-center hover:bg-secondary/80"
+            >
+              <Plus className="w-3 h-3" />
+            </button>
+          </>
+        )}
       </div>
 
     </div>
@@ -989,17 +1007,69 @@ const Index = () => {
   console.log('totalStats:', totalStats);
   console.log('equippedAccessories:', equippedAccessories.map(a => a ? { name: a.name, stats: a.stats, baseTransferStats: a.baseTransferStats, yellowStats: a.yellowStats, yellowTransferStats: a.yellowTransferStats } : null));
 
-  // Когда выбирают аксессуар - всегда показываем модалку переноса базовых
+  // Когда выбирают аксессуар - показываем модалку переноса в зависимости от типа аксессуара
   const handleSelectAccessory = useCallback((accessory: Accessory) => {
     setPendingAccessory(accessory);
     setSelectedSlot(null);
-    setShowBaseStatsModal(true);
+    
+    // Для бронежилетов (слот 7): если есть обычные статы - показываем желтые, если только желтые - показываем базовые
+    if (accessory.slot === 7) {
+      const hasBaseStats = accessory.stats && Object.values(accessory.stats).some(v => v !== 0);
+      if (hasBaseStats && !accessory.isYellowOnly) {
+        // У бронежилета есть обычные статы - можно перенести желтые
+        setShowYellowModal(true);
+      } else {
+        // У бронежилета только желтые статы - можно перенести базовые
+        setShowBaseStatsModal(true);
+      }
+    } 
+    // Для чемоданов (слот 8): если есть обычные статы - показываем желтые, иначе сразу экипируем
+    else if (accessory.slot === 8) {
+      const hasBaseStats = accessory.stats && Object.values(accessory.stats).some(v => v !== 0);
+      if (hasBaseStats && !accessory.isYellowOnly) {
+        // У чемодана есть обычные статы - можно перенести желтые
+        setShowYellowModal(true);
+      } else {
+        // У чемодана только желтые статы - сразу экипируем без переносов
+        setEquippedAccessories((prev) => {
+          const newEquipped = [...prev];
+          newEquipped[accessory.slot - 1] = accessory;
+          return newEquipped;
+        });
+        setPendingAccessory(null);
+      }
+    }
+    // Для остальных слотов - стандартная логика
+    else {
+      setShowBaseStatsModal(true);
+    }
   }, []);
 
   // Выбрали базовые характеристики для переноса
   const handleSelectBaseStats = useCallback((sourceAccessory: Accessory) => {
     if (pendingAccessory) {
-      // Добавляем перенесённые базовые статы (не затирая встроенные)
+      // Для бронежилетов (слот 7) с желтыми статами: переносим базовые статы и сразу экипируем
+      if (pendingAccessory.slot === 7 && pendingAccessory.isYellowOnly) {
+        const updatedAccessory: Accessory = {
+          ...pendingAccessory,
+          baseTransferStats: { ...sourceAccessory.stats },
+        };
+        setEquippedAccessories((prev) => {
+          const newEquipped = [...prev];
+          newEquipped[pendingAccessory.slot - 1] = updatedAccessory;
+          return newEquipped;
+        });
+        setSelectedBaseStatsSource((prev) => {
+          const newSources = [...prev];
+          newSources[pendingAccessory.slot - 1] = sourceAccessory;
+          return newSources;
+        });
+        setPendingAccessory(null);
+        setShowBaseStatsModal(false);
+        return;
+      }
+      
+      // Для остальных: стандартная логика
       const updatedAccessory: Accessory = {
         ...pendingAccessory,
         baseTransferStats: { ...sourceAccessory.stats },
@@ -1018,16 +1088,31 @@ const Index = () => {
         newSources[pendingAccessory.slot - 1] = sourceAccessory;
         return newSources;
       });
+      
+      setShowBaseStatsModal(false);
+      // Переходим к выбору жёлтых (кроме бронежилетов с желтыми статами)
+      if (pendingAccessory.slot !== 7 || !pendingAccessory.isYellowOnly) {
+        setShowYellowModal(true);
+      }
     }
-    setShowBaseStatsModal(false);
-    // Переходим к выбору жёлтых
-    setShowYellowModal(true);
   }, [pendingAccessory]);
 
   // Пропустить перенос базовых характеристик
   const handleSkipBaseStats = useCallback(() => {
     setPendingAccessory((currentPending) => {
       if (!currentPending) return currentPending;
+
+      // Для бронежилетов (слот 7) с желтыми статами: если пропустили базовые, сразу экипируем
+      if (currentPending.slot === 7 && currentPending.isYellowOnly) {
+        setEquippedAccessories((prev) => {
+          const newEquipped = [...prev];
+          newEquipped[currentPending.slot - 1] = currentPending;
+          return newEquipped;
+        });
+        setPendingAccessory(null);
+        setShowBaseStatsModal(false);
+        return null;
+      }
 
       // Очищаем перенос базовых статов
       const cleared: Accessory = {
@@ -1042,19 +1127,18 @@ const Index = () => {
         return newSources;
       });
 
+      setShowBaseStatsModal(false);
+      // Переходим к выбору жёлтых
+      setShowYellowModal(true);
       return cleared;
     });
-
-    setShowBaseStatsModal(false);
-    // Переходим к выбору жёлтых
-    setShowYellowModal(true);
   }, []);
 
   // Выбрали жёлтые характеристики для переноса
   const handleSelectYellowStats = useCallback((sourceAccessory: Accessory) => {
     setPendingAccessory((currentPending) => {
       if (currentPending) {
-        const yellowSource = sourceAccessory.yellowStats;
+        const yellowSource = sourceAccessory.yellowStats || (sourceAccessory.isYellowOnly ? sourceAccessory.yellowStats : undefined);
         const accessoryWithYellow: Accessory = {
           ...currentPending,
           yellowTransferStats: yellowSource ? { ...yellowSource } : undefined,
@@ -1125,6 +1209,8 @@ const Index = () => {
   }, []);
 
   const handleEnhance = useCallback((slotIndex: number, delta: number) => {
+    // Слот 8 (чемоданы) не может иметь заточки
+    if (slotIndex === 7) return;
     setEnhancements((prev) => {
       const newEnhancements = [...prev];
       newEnhancements[slotIndex] = Math.max(0, Math.min(14, newEnhancements[slotIndex] + delta));
