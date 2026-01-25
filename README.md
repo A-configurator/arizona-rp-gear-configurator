@@ -1,73 +1,101 @@
-# Welcome to your Lovable project
+# Arizona RP Gear Configurator
 
-## Project info
+Конфигуратор сетов аксессуаров для Arizona RP. Соберите идеальный сет аксессуаров, рассчитайте характеристики и бонусы.
 
-**URL**: https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID
+🔗 **Репозиторий**: https://github.com/A-configurator/arizona-rp-gear-configurator
 
-## How can I edit this code?
+## 🚀 Быстрый старт
 
-There are several ways of editing your application.
+### Требования
 
-**Use Lovable**
+- Node.js 18+ и npm
+- Git (для работы с репозиторием)
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and start prompting.
+### Установка и запуск
 
-Changes made via Lovable will be committed automatically to this repo.
+```bash
+# 1. Клонируйте репозиторий
+git clone https://github.com/A-configurator/arizona-rp-gear-configurator.git
 
-**Use your preferred IDE**
+# 2. Перейдите в директорию проекта
+cd arizona-rp-gear-configurator
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+# 3. Установите зависимости
+npm install
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
-
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
+# 4. Запустите dev-сервер
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+Приложение будет доступно по адресу `http://localhost:5173`
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+## 📦 Скрипты
 
-**Use GitHub Codespaces**
+- `npm run dev` - запуск dev-сервера
+- `npm run build` - сборка production версии
+- `npm run build:dev` - сборка development версии
+- `npm run preview` - предпросмотр production сборки
+- `npm run lint` - проверка кода линтером
+- `npm test` - запуск тестов
+- `npm run test:watch` - запуск тестов в watch режиме
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+## 🛠 Технологии
 
-## What technologies are used for this project?
+- **Vite** - сборщик и dev-сервер
+- **React 18** - UI библиотека
+- **TypeScript** - типизация
+- **shadcn-ui** - компоненты UI
+- **Tailwind CSS** - стилизация
+- **React Router** - маршрутизация
+- **TanStack Query** - управление состоянием сервера
 
-This project is built with:
+## 📤 Загрузка на GitHub
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+Для автоматической загрузки проекта на GitHub используйте скрипт:
 
-## How can I deploy this project?
+```powershell
+.\scripts\upload-to-github.ps1
+```
 
-Simply open [Lovable](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and click on Share -> Publish.
+Скрипт автоматически:
+- Проверит наличие Git
+- Добавит все изменения
+- Создаст коммит
+- Отправит на GitHub
 
-## Can I connect a custom domain to my Lovable project?
+### Настройка аутентификации GitHub
 
-Yes, you can!
+Если при push запрашивается пароль:
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+1. Создайте Personal Access Token: https://github.com/settings/tokens
+2. Выберите права: `repo` (полный доступ к репозиториям)
+3. При push введите токен вместо пароля
+4. Windows сохранит его в Credential Manager
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+Подробнее в файле `scripts/git-workflow.md`
+
+## 📁 Структура проекта
+
+```
+arizona-rp-gear-configurator/
+├── src/
+│   ├── components/     # React компоненты
+│   ├── pages/          # Страницы приложения
+│   ├── data/           # Данные (аксессуары, патчи)
+│   ├── hooks/          # Кастомные хуки
+│   └── lib/            # Утилиты
+├── public/             # Статические файлы
+├── scripts/            # Скрипты для работы с Git
+└── package.json        # Зависимости и скрипты
+```
+
+## 🎯 Функциональность
+
+- Конфигуратор сетов аксессуаров Arizona RP
+- Расчет характеристик и бонусов
+- Визуализация персонажа с аксессуарами
+- Сохранение и загрузка конфигураций
+
+## 📝 Лицензия
+
+Проект создан для сообщества Arizona RP.

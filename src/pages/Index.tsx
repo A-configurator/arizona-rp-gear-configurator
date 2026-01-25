@@ -931,15 +931,15 @@ const EquipmentSlot = ({ slotNumber, equipped, enhancement, onSlotClick, onEnhan
         <span className="text-xs font-medium text-primary">+{enhancement}</span>
         <button
           onClick={(e) => { e.stopPropagation(); onEnhance(-1); }}
-          className="w-7 h-7 bg-secondary rounded flex items-center justify-center hover:bg-secondary/80 transition-colors"
+          className="w-5 h-5 bg-secondary rounded flex items-center justify-center hover:bg-secondary/80"
         >
-          <Minus className="w-4 h-4" />
+          <Minus className="w-3 h-3" />
         </button>
         <button
           onClick={(e) => { e.stopPropagation(); onEnhance(1); }}
-          className="w-7 h-7 bg-secondary rounded flex items-center justify-center hover:bg-secondary/80 transition-colors"
+          className="w-5 h-5 bg-secondary rounded flex items-center justify-center hover:bg-secondary/80"
         >
-          <Plus className="w-4 h-4" />
+          <Plus className="w-3 h-3" />
         </button>
       </div>
 
