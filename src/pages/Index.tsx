@@ -1090,9 +1090,17 @@ const Index = () => {
       });
       
       setShowBaseStatsModal(false);
-      // Переходим к выбору жёлтых (кроме бронежилетов с желтыми статами)
-      if (pendingAccessory.slot !== 7 || !pendingAccessory.isYellowOnly) {
+      // Переходим к выбору жёлтых (кроме бронежилетов с желтыми статами и чемоданов)
+      if ((pendingAccessory.slot !== 7 || !pendingAccessory.isYellowOnly) && pendingAccessory.slot !== 8) {
         setShowYellowModal(true);
+      } else {
+        // Для чемоданов и бронежилетов с желтыми статами - сразу экипируем
+        setEquippedAccessories((prev) => {
+          const newEquipped = [...prev];
+          newEquipped[pendingAccessory.slot - 1] = updatedAccessory;
+          return newEquipped;
+        });
+        setPendingAccessory(null);
       }
     }
   }, [pendingAccessory]);
