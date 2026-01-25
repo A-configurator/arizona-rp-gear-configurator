@@ -160,6 +160,18 @@ const calculateSlotBonuses = (
     }
   }
 
+  // Slot 7 - Бронежилет (каждая заточка +5 брони до +13)
+  // Заточки: 0=0, 1=+5, 2=+10, 3+=+13 (максимум)
+  if (slot === 7) {
+    if (level === 1) {
+      bonuses.maxArmor = 5;
+    } else if (level === 2) {
+      bonuses.maxArmor = 10;
+    } else if (level >= 3) {
+      bonuses.maxArmor = 13; // Максимум +13 с третьей заточки
+    }
+  }
+
   return bonuses;
 };
 

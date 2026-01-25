@@ -207,6 +207,20 @@ import creeperBackpackImg from '@/assets/slot6-yellow/creeper-backpack.png';
 import aegisImg from '@/assets/slot6-yellow/aegis.png';
 import traxCrossbowImg from '@/assets/slot6-yellow/trax-crossbow.png';
 
+// Импорты бронежилетов слота 7
+import generalVest1Img from '@/assets/slot7-vest/general-vest-1.png';
+import tacticalVestImg from '@/assets/slot7-vest/tactical-vest.png';
+import graffitiVestImg from '@/assets/slot7-vest/graffiti-vest.png';
+import fireVestImg from '@/assets/slot7-vest/fire-vest.png';
+import vest1Img from '@/assets/slot7-vest/vest-1.png';
+import vest2Img from '@/assets/slot7-vest/vest-2.png';
+import vest3Img from '@/assets/slot7-vest/vest-3.png';
+import vest4Img from '@/assets/slot7-vest/vest-4.png';
+import vest5Img from '@/assets/slot7-vest/vest-5.png';
+import vest6Img from '@/assets/slot7-vest/vest-6.png';
+import vest7Img from '@/assets/slot7-vest/vest-7.png';
+import vest8Img from '@/assets/slot7-vest/vest-8.png';
+
 // Аксессуары Arizona RP
 export const accessories: Accessory[] = [
   // ===== СЛОТ 1 - ГОЛОВА =====
@@ -1292,6 +1306,149 @@ export const accessories: Accessory[] = [
     yellowStats: { ...emptyStats, damage: 2, maxHp: 7, maxArmor: 7, reflect: 1 },
     accessoryType: 'attack',
     imageUrl: traxCrossbowImg,
+    isYellowOnly: true,
+  },
+  // ===== СЛОТ 7 - БРОНЕЖИЛЕТ =====
+  {
+    id: 801,
+    name: 'Генеральский бронежилет',
+    slot: 7,
+    slotName: 'Бронежилет',
+    description: 'Элитный генеральский бронежилет',
+    rarity: 'legendary',
+    stats: { ...emptyStats, defense: 2, damage: 2, luck: 1, maxArmor: 35 },
+    imageUrl: generalVest1Img,
+  },
+  {
+    id: 802,
+    name: 'Тактический бронежилет',
+    slot: 7,
+    slotName: 'Бронежилет',
+    description: 'Тактический бронежилет',
+    rarity: 'rare',
+    stats: { ...emptyStats },
+    yellowStats: { ...emptyStats, luck: 2, maxArmor: 10 },
+    imageUrl: tacticalVestImg,
+    isYellowOnly: true,
+  },
+  {
+    id: 803,
+    name: 'Бронежилет с граффити',
+    slot: 7,
+    slotName: 'Бронежилет',
+    description: 'Бронежилет с ярким граффити',
+    rarity: 'epic',
+    stats: { ...emptyStats },
+    yellowStats: { ...emptyStats, maxArmor: 50 },
+    imageUrl: graffitiVestImg,
+    isYellowOnly: true,
+  },
+  {
+    id: 804,
+    name: 'Огненный бронежилет',
+    slot: 7,
+    slotName: 'Бронежилет',
+    description: 'Бронежилет с огненным дизайном',
+    rarity: 'epic',
+    stats: { ...emptyStats },
+    yellowStats: { ...emptyStats, defense: 2, damage: 2 },
+    imageUrl: fireVestImg,
+    isYellowOnly: true,
+  },
+  {
+    id: 805,
+    name: 'Бронежилет #1',
+    slot: 7,
+    slotName: 'Бронежилет',
+    description: 'Бронежилет #1',
+    rarity: 'rare',
+    stats: { ...emptyStats },
+    yellowStats: { ...emptyStats, luck: 1, maxHp: 5 },
+    imageUrl: vest1Img,
+    isYellowOnly: true,
+  },
+  {
+    id: 806,
+    name: 'Бронежилет #2',
+    slot: 7,
+    slotName: 'Бронежилет',
+    description: 'Бронежилет #2',
+    rarity: 'rare',
+    stats: { ...emptyStats },
+    yellowStats: { ...emptyStats, defense: 1, maxHp: 5 },
+    imageUrl: vest2Img,
+    isYellowOnly: true,
+  },
+  {
+    id: 807,
+    name: 'Бронежилет #3',
+    slot: 7,
+    slotName: 'Бронежилет',
+    description: 'Бронежилет #3',
+    rarity: 'rare',
+    stats: { ...emptyStats },
+    yellowStats: { ...emptyStats, damage: 1, maxHp: 5 },
+    imageUrl: vest3Img,
+    isYellowOnly: true,
+  },
+  {
+    id: 808,
+    name: 'Бронежилет #4',
+    slot: 7,
+    slotName: 'Бронежилет',
+    description: 'Бронежилет #4',
+    rarity: 'rare',
+    stats: { ...emptyStats },
+    yellowStats: { ...emptyStats, luck: 1, maxHp: 5 },
+    imageUrl: vest4Img,
+    isYellowOnly: true,
+  },
+  {
+    id: 809,
+    name: 'Бронежилет #5',
+    slot: 7,
+    slotName: 'Бронежилет',
+    description: 'Бронежилет #5',
+    rarity: 'rare',
+    stats: { ...emptyStats },
+    yellowStats: { ...emptyStats, defense: 1, maxHp: 5 },
+    imageUrl: vest5Img,
+    isYellowOnly: true,
+  },
+  {
+    id: 810,
+    name: 'Бронежилет #6',
+    slot: 7,
+    slotName: 'Бронежилет',
+    description: 'Бронежилет #6',
+    rarity: 'rare',
+    stats: { ...emptyStats },
+    yellowStats: { ...emptyStats, defense: 1, maxHp: 5 },
+    imageUrl: vest6Img,
+    isYellowOnly: true,
+  },
+  {
+    id: 811,
+    name: 'Бронежилет #7',
+    slot: 7,
+    slotName: 'Бронежилет',
+    description: 'Бронежилет #7',
+    rarity: 'rare',
+    stats: { ...emptyStats },
+    yellowStats: { ...emptyStats, damage: 1, maxHp: 5 },
+    imageUrl: vest7Img,
+    isYellowOnly: true,
+  },
+  {
+    id: 812,
+    name: 'Бронежилет #8',
+    slot: 7,
+    slotName: 'Бронежилет',
+    description: 'Бронежилет #8',
+    rarity: 'rare',
+    stats: { ...emptyStats },
+    yellowStats: { ...emptyStats, luck: 1, maxHp: 5 },
+    imageUrl: vest8Img,
     isYellowOnly: true,
   },
 ];
